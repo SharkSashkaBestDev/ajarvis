@@ -14,7 +14,15 @@
     <name>AJarvis J-1 Module</name>
 
     <dependencies>
-
+        <dependency>
+            <groupId>com.asoft.ajarvis</groupId>
+            <artifactId>actions</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
