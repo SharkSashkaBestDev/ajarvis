@@ -39,6 +39,13 @@ def recognize():
                     print("Вы точно хотите выйти")
                     continue
 
+                if "остановить" in current_phrase.split(" ") and pause_flag:
+                    pause_flag = False
+                    print("Распознавание приостановлено!")
+
+                if pause_flag:
+                    print("You said: " + current_phrase)
+
                 print("You said: " + current_phrase)
 
             except Exception as e:
