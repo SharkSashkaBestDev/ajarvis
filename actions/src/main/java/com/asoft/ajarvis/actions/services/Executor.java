@@ -1,8 +1,11 @@
 package com.asoft.ajarvis.actions.services;
 
+import com.asoft.ajarvis.actions.AjarvisApplication;
 import com.asoft.ajarvis.actions.enities.Command;
+import com.asoft.ajarvis.actions.enities.HistoryRecord;
+import com.asoft.ajarvis.actions.enities.Language;
 import com.asoft.ajarvis.actions.repository.CommandRepository;
-
+import com.asoft.ajarvis.actions.repository.HistoryRepository;
 import groovy.lang.GroovyShell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.NoSuchElementException;
 
 
@@ -22,9 +25,17 @@ public class Executor {
     @Autowired
     CommandRepository cmdRepo;
 
+    @Autowired
+    HistoryRepository historyRepo;
 
-    public StringBuilder createCode(Command cmd) throws NoSuchElementException {
-        StringBuilder code = new StringBuilder(),
+private static HashMap<Language,String> servers=new HashMap<Language,String>();
+    static {
+        servers.put(Language.PYTHON,"http://10.241.128.77:5000/execute");
+    }
+
+
+    public StringBuilder createCode(StringBuilder code ,Command cmd) throws NoSuchElementException {
+        StringBuilder
                 invocation = null;
         if (cmd.getUsedCommandsIds() != null && !cmd.getUsedCommandsIds().isEmpty()) {
 
@@ -36,32 +47,49 @@ public class Executor {
             ) {
 
                 Command current = cmdRepo.findById(id).get();
-                code.append(createCode(current) + "\n");
+                createCode(code ,current);
 
                 invocation.insert(0, current.getName() + "(");
                 invocation.append(")");
             }
 
 
-
             invocation.append(";\n");
             invocation.insert(0, " return ");
 
         }
-        code.append(" Map " + " " + cmd.getName() + "(" + " Map " + " arg ){");
+        code.append("\n Map " + " " + cmd.getName() + "(" + " Map " + " arg ){\n");
         if (cmd.getCode() != null) {
-            code.append(cmd.getCode() + " ");
+            if (cmd.getLanguage() != null) {
+                switch (cmd.getLanguage()) {
+                    case PYTHON:
+                        code.append("ArrayList<String> ids = new ArrayList<>();ids.add(\""+cmd.getId()+"\");return context.getBean('request').sendRequest(\""+servers.get(Language.PYTHON)+"\",ids, arg);");
+                        break;
+                    case JAVA:
+                        code.append(cmd.getCode() + " ");
+                        break;
+
+                }
+            } else {
+                code.append(cmd.getCode() + " ");
+
+            }
+
+
         }
+
         if (invocation != null) {
             code.append(invocation);
         }
-
+       // logger.info("code: \n"+code.toString());
         code.append("\n};");
 
 
-//        code.append("return " + cmd.getName() + "(arg);\n");
 
 
+        if (cmd.getImports() != null) {
+            code.insert(0,cmd.getImports());
+        }
         return code;
 
     }
@@ -73,31 +101,26 @@ public class Executor {
 
             GroovyShell shell = new GroovyShell();
             shell.setVariable("arg", args);
+            shell.setVariable("context", AjarvisApplication.context);
             shell.setVariable("log", LoggerFactory.getLogger(cmd.getId()));
 
-            return shell.run(createCode(cmd).toString() + "return " + cmd.getName() + "(arg);", "myscript.groovy", Collections.emptyList());
+
+
+            return shell.run(createCode(new StringBuilder(),cmd).toString() + "return " + cmd.getName() + "(arg);", "myscript.groovy", Collections.emptyList());
         } catch (NoSuchElementException e) {
             throw e;
 
         } catch (Exception e) {
 
-            logger.error("Execute failture", e);
+            logger.error("Execute failture in "+cmd.getId()+"command with :", e);
             return e;
+        }
+        finally {
+
+            historyRepo.save( new HistoryRecord(cmd.getId()));
+            logger.info("History was updated : record was added");
+
         }
     }
 
-    public Object executeTest(Command cmd, Map args) {
-        try {
-            //Binding binding = new Binding(arg:arg);
-            GroovyShell shell = new GroovyShell();
-            shell.setVariable("arg", args);
-
-            return shell.run(cmd.getCode(), "myscript.groovy", Collections.emptyList());
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return e;
-        }
-    }
 }

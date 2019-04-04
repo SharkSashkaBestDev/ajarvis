@@ -11,15 +11,24 @@ import org.springframework.context.ConfigurableApplicationContext;
 @SpringBootApplication
 public class AjarvisApplication {
 
-	private final static Logger logger = LoggerFactory.getLogger(AjarvisApplication.class);
+    private final static Logger logger = LoggerFactory.getLogger(AjarvisApplication.class);
 
-	private static ConfigurableApplicationContext context;
+    public static ConfigurableApplicationContext context;
 
-	public static void main(String[] args) {
-		context = SpringApplication.run(AjarvisApplication.class, args);
-		logger.debug("worked ");
-		logger.info("worked ");
-		logger.warn("worked ");
-		logger.error("worked ");
-	}
+    public static void main(String[] args) {
+        context = SpringApplication.run(AjarvisApplication.class, args);
+        logger.debug("worked ");
+        logger.info("worked ");
+        logger.warn("worked ");
+        logger.error("worked ");
+
+    }
+
+
+//	@EventListener(ApplicationReadyEvent.class)
+//	public void doSomethingAfterStartup() {
+//		CommandRepository commandRepository =(CommandRepository)context.getBean("commandRepository");
+//
+//		commandRepository.save(new Command("click", "py", "test", Language.PYTHON));
+//	}
 }

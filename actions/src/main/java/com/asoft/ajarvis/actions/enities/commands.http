@@ -46,9 +46,10 @@ Content-Type: application/json
 
 {
   "name": "printArg",
+  "phrase": "go",
   "returnType":"Void",
   "paramType":"Map<String,Object>",
-  "code":  " println(arg); return null;"
+  "code":  " println(arg);log.info('worked'); return null;"
 }
 ###
 POST http://localhost:8091/ajarvis/commands
@@ -56,7 +57,8 @@ Content-Type: application/json
 
 {
   "name": "addArg",
-  "phrase": "end1",
+  "phrase": "end",
+  "imports": "import java.util.ArrayList;\nimport java.util.Date;",
   "returnType":"Map<String,Object>",
   "paramType":"Map<String,Object>",
   "code":  " arg.put(\"do\",3);println(arg);return arg;"
@@ -71,9 +73,22 @@ Content-Type: application/json
 {
   "name": "chain",
   "returnType":"Void",
-  "phrase": "cont2",
-  "paramType":" Map<String,Object> ",
-  "usedCommandsIds":["aa0e1154-0b5c-4232-8810-59ebbe231e40","0b69ed43-c418-459f-9875-888f58fda34c"],
-  "code":  "log.warn(\"i worked\");"
+  "phrase": "chain",
+
+  "usedCommandsIds":["a01dd21f-04b4-4775-8670-166e0b0f5ef3","ecd0d8d8-0355-48df-85b1-e7c821ee0374"],
+  "code":  ""
+}
+####
+###
+
+POST http://localhost:8091/ajarvis/commands
+Content-Type: application/json
+
+{
+  "name": "chain_py",
+
+  "phrase": "work",
+  "language":"PYTHON",
+  "code": "print('work');return arg;"
 }
 ####

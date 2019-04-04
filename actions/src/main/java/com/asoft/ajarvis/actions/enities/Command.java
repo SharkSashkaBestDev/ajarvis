@@ -11,7 +11,9 @@ import org.springframework.data.annotation.Id;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -26,8 +28,9 @@ public class Command {
     private String name;
     private String phrase;
     private String code;
-    private String paramType;
-    private String returnType;
+    private String imports;
+    private Map<String, Object> paramType;
+    private Map<String, Object> returnType;
     private Language language;
     @Setter(value = AccessLevel.NONE)
     private List<String> whereUsed;
@@ -54,7 +57,7 @@ public class Command {
         this.usedCommandsIds = usedCommandsIds;
     }
 
-    public Command(String name, String phrase, String code, String paramType, String returnType, List<String> usedCommandsIds) {
+    public Command(String name, String phrase, String code, Map<String, Object> paramType, Map<String, Object> returnType, List<String> usedCommandsIds) {
         this.name = name;
         this.phrase = phrase;
         this.code = code;
@@ -63,7 +66,15 @@ public class Command {
         this.usedCommandsIds = usedCommandsIds;
     }
 
-    public Command(String name, String phrase, String code, String returnType, List<String> usedCommandsIds) {
+    public Command(String name, String phrase,  Map<String, Object> paramType, Map<String, Object> returnType, List<String> usedCommandsIds) {
+        this.name = name;
+        this.phrase = phrase;
+        this.paramType = paramType;
+        this.returnType = returnType;
+        this.usedCommandsIds = usedCommandsIds;
+    }
+
+    public Command(String name, String phrase, String code, Map<String, Object> returnType, List<String> usedCommandsIds) {
         this();
         this.name = name;
         this.phrase = phrase;

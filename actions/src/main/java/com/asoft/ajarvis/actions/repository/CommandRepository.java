@@ -1,16 +1,15 @@
 package com.asoft.ajarvis.actions.repository;
 
 
-
 import com.asoft.ajarvis.actions.enities.Command;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 
 @Repository
-public interface CommandRepository extends CrudRepository<Command, String> {
+public interface CommandRepository extends MongoRepository<Command, String> {
 
     Iterable<Command> findByPhraseEndingWith(String str);
 
