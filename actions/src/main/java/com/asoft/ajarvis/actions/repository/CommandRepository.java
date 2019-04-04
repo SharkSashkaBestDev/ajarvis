@@ -5,6 +5,7 @@ import com.asoft.ajarvis.actions.enities.Command;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -17,6 +18,8 @@ public interface CommandRepository extends MongoRepository<Command, String> {
 
     Iterable<Command> findAllByUsedCommandsIdsContaining(String id);
 
+
+    Optional<Command> findByUsedCommandsIds(List<String> s);
 
     Optional<Command> findByPhrase(String str);
 }

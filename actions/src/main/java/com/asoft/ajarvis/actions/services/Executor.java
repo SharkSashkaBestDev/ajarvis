@@ -107,9 +107,6 @@ private static HashMap<Language,String> servers=new HashMap<Language,String>();
 
 
             return shell.run(createCode(new StringBuilder(),cmd).toString() + "return " + cmd.getName() + "(arg);", "myscript.groovy", Collections.emptyList());
-        } catch (NoSuchElementException e) {
-            throw e;
-
         } catch (Exception e) {
 
             logger.error("Execute failture in "+cmd.getId()+"command with :", e);

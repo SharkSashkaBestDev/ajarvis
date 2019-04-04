@@ -58,6 +58,7 @@ public class Command {
     }
 
     public Command(String name, String phrase, String code, Map<String, Object> paramType, Map<String, Object> returnType, List<String> usedCommandsIds) {
+        this();
         this.name = name;
         this.phrase = phrase;
         this.code = code;
@@ -67,6 +68,7 @@ public class Command {
     }
 
     public Command(String name, String phrase,  Map<String, Object> paramType, Map<String, Object> returnType, List<String> usedCommandsIds) {
+        this();
         this.name = name;
         this.phrase = phrase;
         this.paramType = paramType;

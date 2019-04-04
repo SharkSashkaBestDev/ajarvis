@@ -47,6 +47,7 @@ public class CommandController {
         logger.info("Returned history  ");
         return historyRepo.findAll();
     }
+
     @GetMapping(value = "/historyi")
     public Iterable<HistoryRecord> getHistotyri(@RequestParam Date dt) {
         logger.info("Returned history  ");
@@ -60,17 +61,16 @@ public class CommandController {
     }
 
     @PostMapping(value = "/execute/{id}",
-                    consumes = MediaType.APPLICATION_JSON_VALUE,
-                    produces = MediaType.APPLICATION_JSON_VALUE
-                )
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public Object executeCommandById(@PathVariable("id") String id,
-                                 @RequestBody(required = false) Map<String,Object> args) {
+                                     @RequestBody(required = false) Map<String, Object> args) {
         Command command = repository.findById(id).get();
 
-       return executor.execute(command, args);
+        return executor.execute(command, args);
 
     }
-
 
 
     //Execute a comand
@@ -79,60 +79,30 @@ public class CommandController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseStatus(value = HttpStatus.ACCEPTED)
-    public Object executeCommand(@RequestBody( required = false) Map<String,Object> args) {
-        String phrase =(String) args.get("phrase");
+    public Object executeCommand(@RequestBody(required = false) Map<String, Object> args) {
+        String phrase = (String) args.get("phrase");
         args.remove("phrase");
 
         Command command = repository.findByPhrase(phrase).get();
 
-        return  executor.execute(command, args);
+        return executor.execute(command, args);
 
     }
-
 
 
     //Return GeneratedCode
     @GetMapping(value = "/giveCode/{id}")
-    public String getMApp(@PathVariable("id") String id,
-                       @RequestBody(required = false) Map<String,Object> args) {
+    public String getMApp(
+            @PathVariable("id") String id,
+            @RequestBody(required = false) Map<String, Object> args) {
 
 
         Command command = repository.findById(id).get();
 
-        return  executor.createCode(new StringBuilder(),command).toString();
+        return executor.createCode(new StringBuilder(), command).toString();
     }
 
 
-
-    //Only send request to pythonServer
-    @PostMapping(value = "/executePy")
-    public String doSome(@NonNull @RequestBody HashMap<String,Object> arg
-           ) {
-
-        String prhase =(String) arg.get("phrase");
-        if(prhase==null) return null;
-
-        System.out.println("phrase = " + prhase);
-        //prhase=prhase.substring(1,prhase.length()-1);System.out.println("prhase = " + prhase);
-        Request request = (Request) AjarvisApplication.context.getBean("request");
-        System.out.println("request = " + request);
-
-        ArrayList<String> ids = new ArrayList<>();
-        ids.add("\""+repository.findByPhrase(prhase).get().getId()+"\"");
-
-        System.out.println("ids = " + ids);
-
-
-        arg.remove("phrase");
-        Map<String, Object> stringObjectMap = request.sendRequest("http://10.241.128.77:5000/execute",ids, arg);
-
-        System.out.println("stringObjectMap = " + stringObjectMap);
-        System.out.println(" dssd= " + ids.toString());
-        System.out.println("arg = " + arg);
-
-        return stringObjectMap.toString();
-
-    }
 
 
 
