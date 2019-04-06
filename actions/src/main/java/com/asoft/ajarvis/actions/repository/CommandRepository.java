@@ -14,6 +14,9 @@ public interface CommandRepository extends MongoRepository<Command, String> {
 
     Iterable<Command> findByPhraseEndingWith(String str);
 
+
+    Iterable<Command> findAllByPhraseIsStartingWith(String str);
+
     Iterable<Command> findByPhraseContaining(String str);
 
     Iterable<Command> findAllByUsedCommandsIdsContaining(String id);
