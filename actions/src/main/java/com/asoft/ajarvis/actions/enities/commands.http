@@ -72,11 +72,9 @@ Content-Type: application/json
 
 {
   "name": "chain",
-  "returnType":"Void",
-  "phrase": "chain",
+  "phrase": " goWork",
 
-  "usedCommandsIds":["a01dd21f-04b4-4775-8670-166e0b0f5ef3","ecd0d8d8-0355-48df-85b1-e7c821ee0374"],
-  "code":  ""
+  "code":  "println('work')"
 }
 ####
 ###
@@ -92,3 +90,14 @@ Content-Type: application/json
   "code": "List<String> includedcmd=null;if(arg.get('includedCommand')!=null){includedcmd=arg.get('includedCommand')}; String code=null;if(arg.get('code')!=null){code=arg.get('code')};String imports=null;if(arg.get('imports')!=null){imports=arg.get('imports')};context.getBean('commandCreator').createCommand(arg.get('phraseCmd'),imports,code,includedcmd);return arg;"
 }
 ####
+
+POST http://localhost:8091/ajarvis/commands
+Content-Type: application/json
+
+{
+  "name": "delCommand",
+
+  "phrase": "delCommand",
+  "code": "context.getBean('commandCreator').delete(arg.get('phraseCmd'));return arg; "
+}
+#####

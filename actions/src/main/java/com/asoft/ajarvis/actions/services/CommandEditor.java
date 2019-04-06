@@ -12,7 +12,7 @@ import java.util.Map;
 
 
 @Service
-public class CommandCreator {
+public class CommandEditor {
 
     @Autowired
     CommandRepository repo;
@@ -21,7 +21,7 @@ public class CommandCreator {
     public void createCommand(String phrase, String imports, String code, List<String> includedCommand) {
         Command cmd = null;
 
-        if (phrase == null || (code==null && includedCommand ==null)) {
+        if (phrase == null || (code == null && includedCommand == null)) {
             return;
         }
 
@@ -63,7 +63,7 @@ public class CommandCreator {
 
 
         }
-        if (cmd==null) {
+        if (cmd == null) {
             cmd = new Command();
             cmd.setPhrase(phrase);
 
@@ -77,6 +77,9 @@ public class CommandCreator {
 
 
         if (cmd != null) {
+
+
+            addReference(cmd.getId(), cmd.getUsedCommandsIds());
             repo.save(cmd);
         }
 
@@ -84,12 +87,46 @@ public class CommandCreator {
     }
 
 
-    public void delete(@NonNull String Phrase) {
-        repo.delete(repo.findByPhrase(Phrase).get());
+    public void delete(@NonNull String Phrase) throws Exception {
+
+        Command current = repo.findByPhrase(Phrase).get();
+
+        if (current.getWhereUsed() == null && current.getWhereUsed().isEmpty()) {
+            delReference(current.getId(), current.getUsedCommandsIds());
+            repo.delete(current);
+        }
+
 
     }
 
 
+    public void addReference(String id, List<String> included) {
+        Iterable<Command> commands = repo.findAllByIdIn(included);
 
+        for (Command current : commands
+        ) {
+            current.addIntoWhereUsed(id);
+
+
+        }
+        repo.saveAll(commands);
+
+
+    }
+
+
+    public void delReference(String id, List<String> included) {
+        Iterable<Command> commands = repo.findAllByIdIn(included);
+
+        for (Command current : commands
+        ) {
+            current.deleteFromWhereUsed(id);
+
+
+        }
+        repo.saveAll(commands);
+
+
+    }
 
 }

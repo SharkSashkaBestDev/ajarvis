@@ -81,7 +81,7 @@ private static HashMap<Language,String> servers=new HashMap<Language,String>();
         if (invocation != null) {
             code.append(invocation);
         }
-       // logger.info("code: \n"+code.toString());
+
         code.append("\n};");
 
 
@@ -95,9 +95,9 @@ private static HashMap<Language,String> servers=new HashMap<Language,String>();
     }
 
 
-    public Object execute(Command cmd, Object args) throws NoSuchElementException {
+    public Object execute(final Command cmd, Object args) throws NoSuchElementException {
         try {
-            //Binding binding = new Binding(arg:arg);
+
 
             GroovyShell shell = new GroovyShell();
             shell.setVariable("arg", args);

@@ -9,11 +9,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
+
+/**
+ *<h1>Command </h1>
+ *This class describe a form of a  Ajarvis Command
+ *
+ *
+ *
+ * @see Command
+ *
+ * @author A.T
+ *
+ * @since 04.04.2019
+ *
+ */
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -33,7 +44,7 @@ public class Command {
     private Map<String, Object> returnType;
     private Language language;
     @Setter(value = AccessLevel.NONE)
-    private List<String> whereUsed;
+    private HashSet<String> whereUsed;
     private List<String> usedCommandsIds;
 
     public Command() {
@@ -90,7 +101,7 @@ public class Command {
     public boolean addIntoWhereUsed(String id) {
 
         if (this.whereUsed == null) {
-            this.whereUsed = new ArrayList<String>();
+            this.whereUsed = new  HashSet<String>();
 
         }
         logger.info(this.id + " used in " + id + " Command ");
