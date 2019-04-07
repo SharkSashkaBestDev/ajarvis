@@ -93,17 +93,12 @@ public class CommandController {
             @PathVariable("id") String id,
             @RequestBody(required = false) Map<String, Object> args) {
 
-        ArrayList<String> strings = new ArrayList<>();
-        strings.add("sds");
-        strings.add("sds");
-        Command command = repository.findById(id).get();
-        LinkedHashMap<String, Object> arsEx = new LinkedHashMap<>();
-        arsEx.put("path", String.class.getSimpleName());
-       arsEx.put("cord", int.class.getSimpleName());
-       arsEx.put("opertion", float.class.getSimpleName());
-       //arsEx.put("array",strings.getClass().getSimpleName());
 
-        repository.save(new Command("sda", "agago",null, arsEx,arsEx,null) );
+
+        Command command = repository.findById(id).get();
+
+
+
 
 
         return executor.createCode(new StringBuilder(), command).toString();
