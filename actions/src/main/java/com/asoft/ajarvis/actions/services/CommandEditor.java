@@ -7,8 +7,8 @@ import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @Service
@@ -26,10 +26,11 @@ public class CommandEditor {
         }
 
         String name = Translit.translit(phrase.replaceAll(" ", "_"));
-        Map<String, Object> paramType = null;
-        Map<String, Object> returnType = null;
+        LinkedHashMap<String, Object> paramType = null;
+        LinkedHashMap<String, Object> returnType = null;
 
-        if (repo.findByPhrase(phrase).isPresent() != false) {
+        if (repo.findByPhrase(phrase).isPresent() != false)
+        {
             cmd = repo.findByPhrase(phrase).get();
         }
 
@@ -45,11 +46,11 @@ public class CommandEditor {
 
                 if (repo.findById(includedCommand.get(0)).isPresent()) {
 
-                    paramType = repo.findById(includedCommand.get(0)).get().getParamType();
+                    paramType = (LinkedHashMap)repo.findById(includedCommand.get(0)).get().getParamType();
                 }
                 if (repo.findById(includedCommand.get(includedCommand.size() - 1)).isPresent()) {
 
-                    returnType = repo.findById(includedCommand.get(includedCommand.size() - 1)).get().getReturnType();
+                    returnType = (LinkedHashMap) repo.findById(includedCommand.get(includedCommand.size() - 1)).get().getReturnType();
                 }
 
 

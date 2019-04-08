@@ -40,8 +40,8 @@ public class Command {
     private String phrase;
     private String code;
     private String imports;
-    private Map<String, Object> paramType;
-    private Map<String, Object> returnType;
+    private LinkedHashMap<String, Object> paramType;
+    private LinkedHashMap<String, Object> returnType;
     private Language language;
     @Setter(value = AccessLevel.NONE)
     private HashSet<String> whereUsed;
@@ -68,7 +68,7 @@ public class Command {
         this.usedCommandsIds = usedCommandsIds;
     }
 
-    public Command(String name, String phrase, String code, Map<String, Object> paramType, Map<String, Object> returnType, List<String> usedCommandsIds) {
+    public Command(String name, String phrase, String code, LinkedHashMap<String, Object> paramType, LinkedHashMap<String, Object> returnType, List<String> usedCommandsIds) {
         this();
         this.name = name;
         this.phrase = phrase;
@@ -78,7 +78,7 @@ public class Command {
         this.usedCommandsIds = usedCommandsIds;
     }
 
-    public Command(String name, String phrase,  Map<String, Object> paramType, Map<String, Object> returnType, List<String> usedCommandsIds) {
+    public Command(String name, String phrase, LinkedHashMap<String, Object> paramType, LinkedHashMap<String, Object> returnType, List<String> usedCommandsIds) {
         this();
         this.name = name;
         this.phrase = phrase;
@@ -87,7 +87,7 @@ public class Command {
         this.usedCommandsIds = usedCommandsIds;
     }
 
-    public Command(String name, String phrase, String code, Map<String, Object> returnType, List<String> usedCommandsIds) {
+    public Command(String name, String phrase, String code, LinkedHashMap<String, Object> returnType, List<String> usedCommandsIds) {
         this();
         this.name = name;
         this.phrase = phrase;
