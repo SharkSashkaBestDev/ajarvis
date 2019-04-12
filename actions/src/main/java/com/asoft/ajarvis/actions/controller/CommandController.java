@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestController
@@ -88,19 +89,19 @@ public class CommandController {
 
         Command command = repository.findById(id).get();
 
-
         return executor.createCode(new StringBuilder(), command).toString();
     }
 
 
-    @PostMapping(value = "/test")
+    @PostMapping(value = "/filter")
     public Object filteration(@RequestBody HashMap<String, Object> map) {
         Map args = filter.filter(map.get("phrase").toString());
         String phrase = (String) args.get("phrase");
-        if (phrase == null) {
+
+        if (phrase.equals("")) {
             return null;
         }
-        args.remove("phrase");
+//        args.remove("phrase");
 
         Command command = repository.findByPhrase(phrase).get();
 

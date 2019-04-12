@@ -32,7 +32,7 @@ public class Request {
  logger.info("request with("+hostAddress+","+ids+","+  arg);
         try {
             HttpPost request = new HttpPost(hostAddress);
-            StringEntity params =new StringEntity( "{\n \t\"ids\":"+ids.toString()+",\n" +
+            StringEntity params =new StringEntity( "{\"ids\":"+ids.toString()+",\n" +
                     "\t\"kwargs\":\n" +new ObjectMapper().writeValueAsString(arg)+
                     "}","UTF-8");
             request.addHeader("content-type", "application/json");

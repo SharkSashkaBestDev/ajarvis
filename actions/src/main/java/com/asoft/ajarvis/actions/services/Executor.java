@@ -39,7 +39,7 @@ public class Executor {
 
 private static HashMap<Language,String> servers=new HashMap<Language,String>();
     static {
-        servers.put(Language.PYTHON,"http://10.241.128.77:5000/execute");
+        servers.put(Language.PYTHON,"http://10.241.129.11:5000/execute");
     }
 
 
@@ -72,7 +72,7 @@ private static HashMap<Language,String> servers=new HashMap<Language,String>();
             if (cmd.getLanguage() != null) {
                 switch (cmd.getLanguage()) {
                     case PYTHON:
-                        code.append("ArrayList<String> ids = new ArrayList<>();ids.add(\""+cmd.getId()+"\");return context.getBean('request').sendRequest(\""+servers.get(Language.PYTHON)+"\",ids, arg);");
+                        code.append("ArrayList<String> ids = new ArrayList<>();ids.add(\"\\\""+cmd.getId()+"\\\"\");return context.getBean('request').sendRequest(\""+servers.get(Language.PYTHON)+"\",ids, arg);");
                         break;
                     case JAVA:
                         code.append(cmd.getCode() + " ");
@@ -113,9 +113,10 @@ private static HashMap<Language,String> servers=new HashMap<Language,String>();
             shell.setVariable("context", AjarvisApplication.context);
             shell.setVariable("log", LoggerFactory.getLogger(cmd.getId()));
 
+            StringBuilder code = createCode(new StringBuilder(), cmd);
 
-
-            return shell.run(createCode(new StringBuilder(),cmd).toString() + "return " + cmd.getName() + "(arg);", "myscript.groovy", Collections.emptyList());
+            return shell.run(code.toString() + "return " + cmd.getName() + "(arg);",
+                    "myscript.groovy", Collections.emptyList());
         } catch (Exception e) {
 
             logger.error("Execute failture in "+cmd.getId()+"command with :", e);

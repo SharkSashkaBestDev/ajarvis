@@ -20,6 +20,7 @@ public class CommandEditor {
 
     public void createCommand(String phrase, String imports, String code, List<String> includedCommand) {
         Command cmd = null;
+        phrase=phrase.toLowerCase();
 
         if (phrase == null || (code == null && includedCommand == null)) {
             return;
