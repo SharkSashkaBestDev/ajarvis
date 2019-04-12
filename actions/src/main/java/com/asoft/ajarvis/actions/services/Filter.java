@@ -73,7 +73,8 @@ public class Filter {
 
         if (commands.size() != 1) {
             logger.error("Неправильная команда!");
-            return null;
+                    result.put("phrase","");
+                    return result;
         } else {
 
             result.put("phrase", commands.get(0).getPhrase());
@@ -82,7 +83,7 @@ public class Filter {
               filter_for_arguments(phrase_array[1],commands.get(0),result);
             }
         }
-
+logger.warn("phrase filtered "+result.get("phrase"));
         return result;
     }
 

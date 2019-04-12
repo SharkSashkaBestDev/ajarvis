@@ -16,7 +16,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
-
+/**
+ *
+ *this class execute  some Command
+ *
+ *
+ * @see Command
+ *
+ * @author A.T
+ *
+ */
 @Service
 public class Executor {
 

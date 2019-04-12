@@ -14,7 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/ajarvis/commands")
@@ -57,17 +59,6 @@ public class CommandController {
         repository.save(command);
     }
 
-//    @PostMapping(value = "/execute",
-//            consumes = MediaType.APPLICATION_JSON_VALUE,
-//            produces = MediaType.APPLICATION_JSON_VALUE
-//    )
-//    public Object executeCommandById(@PathVariable("id") String id,
-//                                     @RequestBody(required = false) Map<String, Object> args) {
-//        Command command = repository.findById(id).get();
-//
-//        return executor.execute(command, args);
-//
-//    }
 
 
     //Execute a comand
@@ -75,6 +66,7 @@ public class CommandController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
+
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public Object executeCommand(@RequestBody(required = false) Map<String, Object> args) {
         String phrase = (String) args.get("phrase");
@@ -94,11 +86,7 @@ public class CommandController {
             @RequestBody(required = false) Map<String, Object> args) {
 
 
-
         Command command = repository.findById(id).get();
-
-
-
 
 
         return executor.createCode(new StringBuilder(), command).toString();
@@ -106,11 +94,12 @@ public class CommandController {
 
 
     @PostMapping(value = "/test")
-    public Object filteration(@RequestBody HashMap<String,Object> map) {
-
-
+    public Object filteration(@RequestBody HashMap<String, Object> map) {
         Map args = filter.filter(map.get("phrase").toString());
         String phrase = (String) args.get("phrase");
+        if (phrase == null) {
+            return null;
+        }
         args.remove("phrase");
 
         Command command = repository.findByPhrase(phrase).get();
@@ -118,10 +107,7 @@ public class CommandController {
         return executor.execute(command, args);
 
 
-
     }
-
-
 
 
 }
