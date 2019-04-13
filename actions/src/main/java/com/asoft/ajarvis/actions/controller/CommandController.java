@@ -101,11 +101,11 @@ public class CommandController {
         if (phrase.equals("")) {
             return null;
         }
-//        args.remove("phrase");
 
-        Command command = repository.findByPhrase(phrase).get();
 
-        return executor.execute(command, args);
+
+
+        return args;
 
 
     }

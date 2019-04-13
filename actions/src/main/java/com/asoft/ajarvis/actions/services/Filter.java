@@ -78,11 +78,11 @@ public class Filter {
             result.put("phrase", commands.get(0).getPhrase());
 
             if (commands.get(0).getParamType() != null) {
-                //filter_for_arguments(phrase_array[1],commands.get(0),result);
                 addParam(commands.get(0),result);
             }
         }
         logger.warn("phrase filtered "+result.get("phrase"));
+
         return result;
     }
 
