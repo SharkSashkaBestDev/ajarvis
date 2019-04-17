@@ -1,6 +1,5 @@
 package com.asoft.ajarvis.actions.services;
 
-
 import com.asoft.ajarvis.actions.enities.Command;
 import com.asoft.ajarvis.actions.repository.CommandRepository;
 import lombok.NonNull;
@@ -9,126 +8,91 @@ import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Optional;
 
+import static com.asoft.ajarvis.actions.constant.GeneralConstants.SPACE;
+import static com.asoft.ajarvis.actions.constant.GeneralConstants.UNDERSCORE;
 
 @Service
 public class CommandEditor {
-
     @Autowired
-    CommandRepository repo;
-
+    private CommandRepository repo;
 
     public void createCommand(String phrase, String imports, String code, List<String> includedCommand) {
         Command cmd = null;
-        phrase=phrase.toLowerCase();
 
         if (phrase == null || (code == null && includedCommand == null)) {
             return;
         }
 
-        String name = Translit.translit(phrase.replaceAll(" ", "_"));
+        phrase = phrase.toLowerCase();
+
+        String name = Translit.translit(phrase.replaceAll(SPACE, UNDERSCORE));
         LinkedHashMap<String, Object> paramType = null;
         LinkedHashMap<String, Object> returnType = null;
 
-        if (repo.findByPhrase(phrase).isPresent() != false)
-        {
+        if (repo.findByPhrase(phrase).isPresent()) {
             cmd = repo.findByPhrase(phrase).get();
         }
 
-
-        if (cmd == null
-                && (includedCommand != null)
-        ) {
-            if (repo.findByUsedCommandsIds(includedCommand).isPresent() != false) {
-
+        if (cmd == null && includedCommand != null) {
+            if (repo.findByUsedCommandsIds(includedCommand).isPresent()) {
                 cmd = repo.findByUsedCommandsIds(includedCommand).get();
-
             } else {
-
                 if (repo.findById(includedCommand.get(0)).isPresent()) {
-
-                    paramType = (LinkedHashMap)repo.findById(includedCommand.get(0)).get().getParamType();
+                    paramType = (LinkedHashMap<String, Object>) repo.findById(includedCommand.get(0)).get().getParamType();
                 }
                 if (repo.findById(includedCommand.get(includedCommand.size() - 1)).isPresent()) {
-
-                    returnType = (LinkedHashMap) repo.findById(includedCommand.get(includedCommand.size() - 1)).get().getReturnType();
+                    returnType = (LinkedHashMap<String, Object>) repo.findById(includedCommand.get(includedCommand.size() - 1)).get().getReturnType();
                 }
-
 
                 cmd = new Command();
 
                 cmd.setPhrase(phrase);
                 cmd.setReturnType(returnType);
                 cmd.setParamType(paramType);
-
             }
-
-
         }
         if (cmd == null) {
             cmd = new Command();
             cmd.setPhrase(phrase);
-
         }
-
 
         cmd.setImports(imports);
         cmd.setCode(code);
         cmd.setName(name);
         cmd.setUsedCommandsIds(includedCommand);
 
-
-        if (cmd != null) {
-
-
-            addReference(cmd.getId(), cmd.getUsedCommandsIds());
-            repo.save(cmd);
-        }
-
-
+        addReference(cmd.getId(), cmd.getUsedCommandsIds());
+        repo.save(cmd);
     }
 
+    public void delete(@NonNull String phrase) {
+        Optional<Command> command = repo.findByPhrase(phrase);
 
-    public void delete(@NonNull String Phrase) throws Exception {
+        if (command.isPresent()) {
+            Command existingCommand = command.get();
 
-        Command current = repo.findByPhrase(Phrase).get();
-
-        if (current.getWhereUsed() == null && current.getWhereUsed().isEmpty()) {
-            delReference(current.getId(), current.getUsedCommandsIds());
-            repo.delete(current);
+            if (existingCommand.getWhereUsed() == null || existingCommand.getWhereUsed().isEmpty()) {
+                delReference(existingCommand.getId(), existingCommand.getUsedCommandsIds());
+                repo.delete(existingCommand);
+            }
         }
-
-
     }
-
 
     public void addReference(String id, List<String> included) {
         Iterable<Command> commands = repo.findAllByIdIn(included);
 
-        for (Command current : commands
-        ) {
-            current.addIntoWhereUsed(id);
+        commands.forEach(command -> command.addWhereUsed(id));
 
-
-        }
         repo.saveAll(commands);
-
-
     }
-
 
     public void delReference(String id, List<String> included) {
         Iterable<Command> commands = repo.findAllByIdIn(included);
 
-        for (Command current : commands
-        ) {
-            current.deleteFromWhereUsed(id);
+        commands.forEach(command -> command.deleteFromWhereUsed(id));
 
-
-        }
         repo.saveAll(commands);
-
-
     }
-
 }

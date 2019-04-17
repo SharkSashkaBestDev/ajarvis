@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Translit {
-    private static final Map<String, String> letters = new HashMap<String, String>();
+    private static final Map<String, String> letters = new HashMap<>();
+
     static {
         letters.put("а", "a");
         letters.put("б", "b");
@@ -40,22 +41,14 @@ public class Translit {
         letters.put(" ", "_");
     }
 
-
-
     public static String translit(String str) {
         StringBuilder resultStr = new StringBuilder(str.length());
+
         for (int i = 0; i<str.length(); i++) {
             String l = str.substring(i, i+1);
-            if (letters.containsKey(l)) {
-                resultStr.append(letters.get(l));
-            }
-            else {
-                resultStr.append(l);
-            }
+            resultStr.append(letters.getOrDefault(l, l));
         }
+
         return resultStr.toString();
     }
-
-
-
 }

@@ -1,6 +1,5 @@
 package com.asoft.ajarvis.actions.controller;
 
-
 import com.asoft.ajarvis.actions.enities.Command;
 import com.asoft.ajarvis.actions.enities.HistoryRecord;
 import com.asoft.ajarvis.actions.repository.CommandRepository;
@@ -15,43 +14,41 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
+
+import static com.asoft.ajarvis.actions.constant.GeneralConstants.EMPTY;
 
 @RestController
 @RequestMapping("/ajarvis/commands")
 public class CommandController {
+    private static final Logger logger = LoggerFactory.getLogger(CommandController.class);
 
-    private final static Logger logger = LoggerFactory.getLogger(CommandController.class);
+    private static final String PHRASE = "phrase";
 
     @Autowired
     private CommandRepository repository;
-
     @Autowired
-    HistoryRepository historyRepo;
-
+    private HistoryRepository historyRepo;
     @Autowired
-    Executor executor;
+    private Executor executor;
     @Autowired
-    Filter filter;
+    private Filter filterService;
 
     @GetMapping
     public Iterable<Command> getCommands() {
-        logger.info("Returned  command ");
+        logger.info("Returning list of all commands");
         return repository.findAll();
     }
 
     @GetMapping("/history")
-    public Iterable<HistoryRecord> getHistoty() {
-        logger.info("Returned history  ");
-        return historyRepo.findAll();
-    }
+    public Iterable<HistoryRecord> getHistory(@RequestParam Date dt) {
+        if (dt != null) {
+            logger.info("Returning history by date");
+            return historyRepo.findAllByTimeGreaterThan(dt);
+        }
 
-    @GetMapping(value = "/historyi")
-    public Iterable<HistoryRecord> getHistotyri(@RequestParam Date dt) {
-        logger.info("Returned history  ");
-        return historyRepo.findAllByTimeGreaterThan(dt);
+        logger.info("Returning total history");
+        return historyRepo.findAll();
     }
 
     @PostMapping
@@ -60,55 +57,39 @@ public class CommandController {
         repository.save(command);
     }
 
-
-
-    //Execute a comand
+    /**
+     *  Executes a command
+     */
     @PostMapping(value = "/execute",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
     )
-
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public Object executeCommand(@RequestBody(required = false) Map<String, Object> args) {
-        String phrase = (String) args.get("phrase");
-        args.remove("phrase");
+        String phrase = (String) args.get(PHRASE);
+        args.remove(PHRASE);
 
-        Command command = repository.findByPhrase(phrase).get();
-
-        return executor.execute(command, args);
-
+        return repository.findByPhrase(phrase)
+                .map(existingCommand -> executor.execute(existingCommand, args))
+                .orElse(null);
     }
 
-
-    //Return GeneratedCode
+    /**
+     * Returns generated code
+     */
     @GetMapping(value = "/giveCode/{id}")
-    public String getMApp(
+    public String getCommandGeneratedCode(
             @PathVariable("id") String id,
             @RequestBody(required = false) Map<String, Object> args) {
-
-
-        Command command = repository.findById(id).get();
-
-        return executor.createCode(new StringBuilder(), command).toString();
+        return repository.findById(id)
+                .map(existingCommand -> executor.createCode(new StringBuilder(), existingCommand).toString())
+                .orElse(EMPTY);
     }
-
 
     @PostMapping(value = "/filter")
-    public Object filteration(@RequestBody HashMap<String, Object> map) {
-        Map args = filter.filter(map.get("phrase").toString());
-        String phrase = (String) args.get("phrase");
+    public Object filter(@RequestBody Map<String, Object> args) {
+        String phrase = filterService.filter(args.get(PHRASE).toString()).get(PHRASE).toString();
 
-        if (phrase.equals("")) {
-            return null;
-        }
-
-
-
-
-        return args;
-
-
+        return phrase.isEmpty() ? null : args;
     }
-
-
 }
