@@ -1,7 +1,4 @@
-from multiprocessing import Process
-
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 import pyautogui
 
@@ -96,19 +93,13 @@ def detect_shape(data):
                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, 
                 (255, 128, 0), thickness)
             centers.append(center) 
-        return centers           
-
-    def show_img(img):
-        process = Process(target=open_image, args=(img,))
-        process.start()
-        return process.pid
+        return centers
 
     try:
         err = ""
         img = pyautogui.screenshot()
         img = np.array(img)
         img = img[:, :, ::-1] # conversion from RGB to BGR
-        
 
         mask = get_mask(img)
         # cv2.imwrite("mask.png", mask)
@@ -117,7 +108,7 @@ def detect_shape(data):
             shapes = draw_shapes(shapes, img)
             file_name = 'detected_objects.png'
             cv2.imwrite(file_name, img)
-            data['img_pid'] = int(show_img(img))
+            data['img'] = file_name
             data['shapes'] = shapes
         else:
             err = 'Ничего не нашел'
@@ -127,24 +118,4 @@ def detect_shape(data):
         err = str(e)
     if err:
         data['error'] = err
-    return data
-
-
-def open_image(img):
-    img = cv2.resize(img, (int(img.shape[1]/1.1), int(img.shape[0]/1.1)))
-    img = img[:, :, ::-1]
-    dpi = 120
-    height, width, depth = img.shape
-
-    figsize = width / float(dpi), height / float(dpi)
-
-    fig = plt.figure(figsize=figsize)
-    ax = fig.add_axes([0, 0, 1, 1])
-
-    ax.axis('off')
-
-    ax.imshow(img)
-    figManager = plt.get_current_fig_manager()
-    figManager.full_screen_toggle()
-
-    plt.show()   
+   
