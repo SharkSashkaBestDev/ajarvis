@@ -1,0 +1,13 @@
+{
+    "show_shapes": {
+        "name": "show_shapes",
+        "phrase": [
+            "покажи найденное"
+        ],
+        "paramType": {
+            "img": "path"
+        },
+        "returnType": {},
+        "code": "\nfrom multiprocessing import Process\nprint(\"Show shapes\")\n\nif 'img' in data:\n    data['code'] = '''\nimport cv2;\nimport matplotlib.pyplot as plt;\nimg = cv2.imread(data['img']);\nimg = cv2.resize(img, (int(img.shape[1]/1.1), int(img.shape[0]/1.1)));\nimg = img[:, :, ::-1];\ndpi = 120;\nheight, width, _ = img.shape;\n\nfigsize = width / float(dpi), height / float(dpi);\n\nfig = plt.figure(figsize=figsize);\nax = fig.add_axes([0, 0, 1, 1]);\n\nax.axis('off');\n\nax.imshow(img);\nfigManager = plt.get_current_fig_manager();\nfigManager.full_screen_toggle();\nplt.show()\n'''\n    process = Process(target=temp, args=(data,))\n    process.start()\n    data['img_pid'] = process.pid\nelse:\n    data['error'] = 'Ничего не нашел, поэтому нечего показывать'\n"
+    }
+}
