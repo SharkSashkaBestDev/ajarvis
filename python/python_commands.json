@@ -111,5 +111,5 @@
             "shapes": "Array((int, int))"
         },
         "code": "\nimport psutil\nimport pyautogui\n\ndef choose_shape(data):\n    print(\"Choose shape\")\n    try:\n        num = int(data['shape_num'])\n        data['xy'] = data['shapes'][num]\n        pyautogui.moveTo(*data['xy'])\n        del data['shape_num']\n        try:\n            pid = data['img_pid']\n            p = psutil.Process(pid)\n            p.kill()\n            del data['img_pid']\n        except KeyError:\n            pass\n    except Exception as e:\n        data['error'] = str(e)\n    return data\n\nchoose_shape(data)"
-    },
+    }
 }

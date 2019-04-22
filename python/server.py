@@ -3,6 +3,8 @@ from importlib import import_module
 from flask import Flask, jsonify, request
 from pymongo import MongoClient
 
+from commands_to_json import commands # for testing
+
 
 app = Flask(__name__)
 # app.config["MONGO_URI"] = "mongodb://localhost:27017/commands"
@@ -26,6 +28,7 @@ def exec_command():
     json = request.get_json()
     data.update(json['kwargs'])
     for id in json['ids']:
-        command = db['command'].find_one({"_id": id})
+        command = commands[id] # for testing
+        # command = db['command'].find_one({"_id": id}) # for production with database
         exec(command['code'], {'data': data, 'import_module': import_module, 'temp': temp})
     return jsonify(data)
