@@ -1,3 +1,4 @@
+import json
 import uuid
 
 from pymongo import MongoClient
@@ -146,3 +147,6 @@ if __name__ == '__main__':
             pass
         command['_id'] = str(uuid.uuid4())
         collection.insert_one(command)
+
+    with open('commands.json', 'w', encoding='utf-8') as outfile:
+        json.dump(commands, outfile, ensure_ascii=False)

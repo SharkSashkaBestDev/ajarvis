@@ -1,6 +1,7 @@
+from multiprocessing import Process
+
 import cv2
 import matplotlib.pyplot as plt
-from multiprocessing import Process
 
 
 def show_shapes(data):

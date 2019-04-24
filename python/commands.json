@@ -1,0 +1,123 @@
+{
+    "make_click": {
+        "name": "click",
+        "phrase": [
+            "кликни",
+            "сделай клик"
+        ],
+        "paramType": {
+            "xy": "(int, int)",
+            "double_click": "boolean"
+        },
+        "returnType": {
+            "xy": "(int, int)"
+        },
+        "code": "import pyautogui\n\n\ndef click(data):\n    try:\n        if 'xy' in data:\n            x, y = data['xy']\n        else:\n            x, y = pyautogui.position()\n            data['xy'] = x, y\n        if pyautogui.onScreen(x, y):\n            if data.get('doubleClick', False):\n                print(\"Выполняю двойной клик мышкой в\", x, y)\n                pyautogui.doubleClick(x, y)\n                del data['doubleClick']\n            else:\n                print(\"Выполняю клик мышкой в\", x, y)\n                pyautogui.click(x, y)\n        else:\n            data['error'] = \"Эти координаты находятся вне вашего экрана\", *pyautogui.size()\n    except Exception as e:\n        data['error'] = str(e)\n    return data\n\nclick(data)\n",
+        "_id": "85a33b46-13c5-433f-94c0-942111c152da"
+    },
+    "detect_image": {
+        "name": "detect_image",
+        "phrase": [
+            "найди картинку",
+            "найди изображение"
+        ],
+        "paramType": {
+            "file": "path"
+        },
+        "returnType": {
+            "xy": "(int, int)"
+        },
+        "code": "import pyautogui\nfrom pyscreeze import ImageNotFoundException\n\n\ndef detect_image(data):\n    print(\"Detect image\")\n    try:\n        file = data['file']\n        x, y = pyautogui.locateCenterOnScreen(file, confidence=0.9)\n        data['xy'] = int(x), int(y)\n        pyautogui.moveTo(x, y)\n    except ImageNotFoundException:\n        data['error'] = \"Не нашел такое изображение на экране\"\n    except OSError:\n        data['error'] = f\"Не нашел вашу картинку {file}\"\n    except Exception as e:\n        data['error'] = str(e)\n    del data['file']\n    return data\n\ndetect_image(data)\n",
+        "_id": "8018dbb6-c2f5-4da9-a849-b05794d251d1"
+    },
+    "mouse_move": {
+        "name": "mouse_move",
+        "phrase": [
+            "перемести мышку",
+            "передвинь мышку"
+        ],
+        "paramType": {
+            "xy": "(int, int)"
+        },
+        "returnType": {
+            "xy": "(int, int)"
+        },
+        "code": "\nimport pyautogui\n\ndef mouse_move(data):\n    print(\"Mouse move\")\n\n    pyautogui.moveTo(*data['xy'])\n    return data\n\nmouse_move(data)",
+        "_id": "7ace69ca-1881-43ba-adb6-13be763d90c3"
+    },
+    "press_enter": {
+        "name": "press_enter",
+        "phrase": [
+            "нажми enter"
+        ],
+        "paramType": {},
+        "returnType": {},
+        "code": "\nimport pyautogui\n\ndef press_enter(data):\n    print(\"Press Enter\")\n\n    pyautogui.press('enter')\n    return data\n\npress_enter(data)",
+        "_id": "c0c1206d-90a4-41a3-bd8a-89cdcfecca09"
+    },
+    "write_phrase": {
+        "name": "write_phrase",
+        "phrase": [
+            "напиши"
+        ],
+        "paramType": {
+            "text": "str"
+        },
+        "returnType": {},
+        "code": "\nimport pyautogui\n\ndef write_phrase(data):\n    print(\"Write\")\n\n    for letter in data['text']:\n        pyautogui.press(letter)\n    del data['text']\n    return data\n\nwrite_phrase(data)",
+        "_id": "719122d3-73d4-486f-9365-17db1c5fd404"
+    },
+    "detect_shapes": {
+        "name": "detect_shapes",
+        "phrase": [
+            "найди объекты",
+            "найди прямоугольники",
+            "найди линии"
+        ],
+        "paramType": {
+            "color": "str",
+            "shape": "Enum(line, rectangle, all)",
+            "width_low": "int",
+            "width_up": "int",
+            "height_low": "int",
+            "height_up": "int"
+        },
+        "returnType": {
+            "shapes": "Array((int, int))",
+            "img": "path"
+        },
+        "code": "import cv2\nimport numpy as np\nimport pyautogui\n\n\ncolors = {\n    'белый': (\n        (\n            (0.0, 0.0, 242.24999999999997),\n            (178.50277777777777, 63.74999999999999, 254.99999999999997)\n        ),\n    ),\n    'бирюзовый': (\n        (\n            (79.55555555555556, 127.49999999999999, 63.74999999999999),\n            (94.47222222222223, 254.99999999999997, 254.99999999999997)\n        ),\n        (\n            (79.55555555555556, 63.74999999999999, 127.49999999999999),\n            (94.47222222222223, 127.49999999999999, 254.99999999999997)\n        )\n    ),\n    'жёлтый': (\n        (\n            (19.88888888888889, 127.49999999999999, 63.74999999999999),\n            (37.291666666666664, 254.99999999999997, 254.99999999999997)\n        ),\n        (\n            (19.88888888888889, 63.74999999999999, 127.49999999999999),\n            (37.291666666666664, 127.49999999999999, 254.99999999999997)\n        )\n    ),\n    'желтый': (\n        (\n            (19.88888888888889, 127.49999999999999, 63.74999999999999),\n            (37.291666666666664, 254.99999999999997, 254.99999999999997)\n        ),\n        (\n            (19.88888888888889, 63.74999999999999, 127.49999999999999),\n            (37.291666666666664, 127.49999999999999, 254.99999999999997)\n        )\n    ),\n    'зелёный': (\n        (\n            (37.291666666666664, 127.49999999999999, 63.74999999999999),\n            (79.55555555555556, 254.99999999999997, 254.99999999999997)\n        ),\n        (\n            (37.291666666666664, 63.74999999999999, 127.49999999999999),\n            (79.55555555555556, 127.49999999999999, 254.99999999999997)\n        )\n    ),\n    'зеленый': (\n        (\n            (37.291666666666664, 127.49999999999999, 63.74999999999999),\n            (79.55555555555556, 254.99999999999997, 254.99999999999997)\n        ),\n        (\n            (37.291666666666664, 63.74999999999999, 127.49999999999999),\n            (79.55555555555556, 127.49999999999999, 254.99999999999997)\n        )\n    ),\n    'красный': (\n        (\n            (169.05555555555554, 127.49999999999999, 63.74999999999999),\n            (178.50277777777777, 254.99999999999997, 254.99999999999997)\n        ),\n        (\n            (169.05555555555554, 63.74999999999999, 127.49999999999999),\n            (178.50277777777777, 127.49999999999999, 254.99999999999997)\n        ),\n        (\n            (0.0, 127.49999999999999, 63.74999999999999),\n            (7.458333333333333, 254.99999999999997, 254.99999999999997)\n        ),\n        (\n            (0.0, 63.74999999999999, 127.49999999999999),\n            (7.458333333333333, 127.49999999999999, 254.99999999999997)\n        )\n    ),\n    'оранжевый': (((7.458333333333333, 127.49999999999999, 63.74999999999999),\n                (19.88888888888889, 254.99999999999997, 254.99999999999997)),\n                ((7.458333333333333, 63.74999999999999, 127.49999999999999),\n                (19.88888888888889, 127.49999999999999, 254.99999999999997))),\n    'серый': (\n        (\n            (0.0, 0.0, 25.5),\n            (178.50277777777777, 254.99999999999997, 63.74999999999999)\n        ),\n        \n    ),\n    'светло-серый': (\n        (\n            (0.0, 0.0, 63.74999999999999),\n            (178.50277777777777, 63.74999999999999, 242.24999999999997)\n        ), \n    ),\n    'синий': (((94.47222222222223, 127.49999999999999, 63.74999999999999),\n            (129.27777777777777, 254.99999999999997, 254.99999999999997)),\n            ((94.47222222222223, 63.74999999999999, 127.49999999999999),\n            (129.27777777777777, 127.49999999999999, 254.99999999999997))),\n    'сиреневый': (((146.68055555555554, 127.49999999999999, 63.74999999999999),\n                (169.05555555555554, 254.99999999999997, 254.99999999999997)),\n                ((146.68055555555554, 63.74999999999999, 127.49999999999999),\n                (169.05555555555554, 127.49999999999999, 254.99999999999997))),\n    'фиолетовый': (((129.27777777777777, 127.49999999999999, 63.74999999999999),\n                    (146.68055555555554, 254.99999999999997, 254.99999999999997)),\n                ((129.27777777777777, 63.74999999999999, 127.49999999999999),\n                    (146.68055555555554, 127.49999999999999, 254.99999999999997))),\n    'чёрный': (\n        (\n            (0.0, 0.0, 0.0), (178.50277777777777, 254.99999999999997, 25.5)\n        ),\n    ),\n    'черный': (\n        (\n            (0.0, 0.0, 0.0), (178.50277777777777, 254.99999999999997, 25.5)\n        ),\n    )\n }\n\n\ndef detect_shapes(data):\n    def get_mask(img):\n        img = cv2.GaussianBlur(img, (3, 3), sigmaX=4, sigmaY=4)\n        if 'color' in data:\n            hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)\n            mask = np.zeros(hsv.shape[:-1], dtype=hsv.dtype)\n            for low_c, up_c in colors[data['color']]:\n                mask1 = cv2.inRange(hsv, low_c, up_c)\n                mask = cv2.bitwise_or(mask, mask1)\n            data.pop('color', None)\n        else:\n            gr = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)\n            _, mask = cv2.threshold(gr, 220, 255, cv2.THRESH_BINARY)\n        kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(3, 3))\n        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel) # noise reduction\n        return mask\n\n    def get_shapes(mask):\n        screen_size = pyautogui.size()\n        shapes = []\n        min_area = 50\n        max_area = np.prod(screen_size) / 2\n        min_line_area = 30\n        thickness = 5\n        k = 3\n        is_line = data['shape'] == 'line'\n\n        mode = cv2.RETR_EXTERNAL\n        cnts, _ = cv2.findContours(mask, mode, cv2.CHAIN_APPROX_SIMPLE)\n        for c in cnts:\n            if len(c) > 500: \n                continue\n            if data['shape'] == 'rectangle':\n                is_closed = True        \n                peri = cv2.arcLength(c, is_closed)    \n                approx = cv2.approxPolyDP(c, 0.01*peri, is_closed)\n                if len(approx) == 4:\n                    rect = cv2.minAreaRect(approx)\n                else:\n                    continue\n            else:\n                cnt = cv2.convexHull(c)\n                rect = cv2.minAreaRect(cnt)\n            width, height = rect[1][::-1] if np.abs(rect[2]) == 90 else rect[1]\n            check_rect_size = True\n            if 'width_low' in data:\n                check_rect_size &= data['width_low'] < width\n            if 'width_up' in data:\n                check_rect_size &= width < data['width_up']\n            if 'height_low' in data:\n                check_rect_size &= data['height_low'] < height\n            if 'height_up' in data:\n                check_rect_size &= height < data['height_up']\n\n            check_line_size = ((width < thickness and height > k*width) \\\n                or (height < thickness and width > k*height)) \\\n                and height*width > min_line_area\n            check_rect_size &= width > thickness  \\\n                and height > thickness \\\n                and min_area < cv2.contourArea(c) \\\n                and width*height < max_area\n            \n            if (is_line and check_line_size) \\\n                    or (not is_line and check_rect_size):\n                shapes.append(rect)\n        shapes = sorted(shapes, key=lambda x: x[0][::-1])\n        print(\"Найдено\", len(shapes), \"объект[а/ов]\")\n\n        data.pop('shape', None)\n        data.pop('width_low', None)\n        data.pop('width_up', None)\n        data.pop('height_low', None)\n        data.pop('height_up', None)\n        return shapes\n\n    def draw_shapes(shapes, img):\n        centers = []\n        color = (0, 255, 0)\n        thickness = 2\n        for i, shape in enumerate(shapes):\n            box = np.int0(cv2.boxPoints(shape))\n            cv2.drawContours(img, [box], -1, color, thickness)\n            center = int(shape[0][0]), int(shape[0][1])\n            cv2.putText(img, str(i), center,\n                cv2.FONT_HERSHEY_SIMPLEX, 0.6,\n                (255, 128, 0), \n                thickness)\n            centers.append(center)\n        return centers\n\n    try:\n        err = \"\"\n        img = pyautogui.screenshot()\n        img = np.array(img)\n        img = img[:, :, ::-1] # conversion from RGB to BGR\n        imgToShow = img.copy()\n        \n        mask = get_mask(img)\n        shapes = get_shapes(mask)\n        if len(shapes):\n            shapes = draw_shapes(shapes, imgToShow)\n            file_name = 'detected_objects.png'\n            cv2.imwrite(file_name, imgToShow)\n            data['img'] = file_name\n            data['shapes'] = shapes\n        else:\n            err = 'Ничего не нашел'\n    except KeyError:\n        err = \"Такого цвета нет\"\n    except Exception as e:\n        err = str(e)\n    if err:\n        data['error'] = err\n    return data\n\ndetect_shapes(data)\n",
+        "_id": "19d9a8e4-e8dc-4dc6-b827-57c21708e9e1"
+    },
+    "show_shapes": {
+        "name": "show_shapes",
+        "phrase": [
+            "покажи найденное"
+        ],
+        "paramType": {
+            "img": "path"
+        },
+        "returnType": {},
+        "code": "import cv2\nimport matplotlib.pyplot as plt\nfrom multiprocessing import Process\n\n\ndef show_shapes(data):\n    print(\"Show shapes\")\n\n    if 'img' in data:\n        data['code'] = '''\nimport cv2\nimport matplotlib.pyplot as plt\nimg = cv2.imread(data['img'])\nimg = cv2.resize(img, (int(img.shape[1]/1.1), int(img.shape[0]/1.1)))\nimg = img[:, :, ::-1]\ndpi = 120\nheight, width, _ = img.shape\n\nfigsize = width / float(dpi), height / float(dpi)\n\nfig = plt.figure(figsize=figsize)\nax = fig.add_axes([0, 0, 1, 1])\n\nax.axis('off')\n\nax.imshow(img)\nfigManager = plt.get_current_fig_manager()\nfigManager.full_screen_toggle()\nplt.show()'''\n        process = Process(target=temp, args=(data,))\n        process.start()\n        data['img_pid'] = process.pid\n        del data['code']\n    else:\n        data['error'] = 'Ничего не нашел, поэтому нечего показывать'\n    return data\n\nshow_shapes(data)\n",
+        "_id": "9063b355-08de-4d25-a724-cc9b255e1d55"
+    },
+    "choose_shape": {
+        "name": "choose_shape",
+        "phrase": [
+            "выбираю объект",
+            "выбираю форму",
+            "выбираю"
+        ],
+        "paramType": {
+            "shape_num": "int",
+            "shapes": "Array((int, int))",
+            "img_pid": "int"
+        },
+        "returnType": {
+            "xy": "(int, int)",
+            "shapes": "Array((int, int))"
+        },
+        "code": "import psutil\nimport pyautogui\n\n\ndef choose_shape(data):\n    print(\"Choose shape\")\n    try:\n        num = int(data['shape_num'])\n        data['xy'] = data['shapes'][num]     \n        pyautogui.moveTo(*data['xy'])\n        del data['shape_num']\n        if 'img_pid' in data:\n            pid = data['img_pid']\n            p = psutil.Process(pid)\n            p.kill()\n            del data['img_pid']\n    except Exception as e:\n        data['error'] = str(e)\n    return data\n\nchoose_shape(data)\n",
+        "_id": "668f671b-5b7d-4b16-803f-46ff03d18920"
+    }
+}

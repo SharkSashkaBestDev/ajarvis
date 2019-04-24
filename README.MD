@@ -10,3 +10,6 @@
         - export FLASK_APP=server.py
         - export FLASK_ENV=development
 3. flask run
+
+Для считывания команд из файлов, записи их в БД и генерации json-файла с ними выполнить в cmd файл commands_to_json.py: <br>
+python commands_to_json.py
