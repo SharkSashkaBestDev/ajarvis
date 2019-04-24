@@ -2,4 +2,4 @@
 # https://github.com/damnever/pigar
 
 # click.py: 1
-PyAutoGUI == 0.9.41
+PyAutoGUI >= 0.9.41

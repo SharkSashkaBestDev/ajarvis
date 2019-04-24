@@ -21,3 +21,5 @@ def click(data):
     except Exception as e:
         data['error'] = str(e)
     return data
+
+click(data)
