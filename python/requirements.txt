@@ -2,13 +2,10 @@
 # https://github.com/damnever/pigar
 
 # detect_color_shapes.py: 6
-PyAutoGUI == 0.9.41
-
-# detect_color_shapes.py: 4
-matplotlib == 2.2.2
+PyAutoGUI >= 0.9.41
 
 # detect_color_shapes.py: 5
-numpy == 1.14.5
+numpy >= 1.14.5
 
 # detect_color_shapes.py: 3
-opencv_python == 4.0.0.21
+opencv_python >= 4.0.0.21
