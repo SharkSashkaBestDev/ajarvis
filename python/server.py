@@ -18,7 +18,6 @@ data = {}
 
 def temp(data):
     exec(data['code'])
-    data.pop('code', None)
 
 @app.route('/execute', methods=['POST'])
 def exec_command():
@@ -28,5 +27,8 @@ def exec_command():
     data.update(json['kwargs'])
     for id in json['ids']:
         command = collection.find_one({"_id": id})
-        exec(command['code'], {'data': data, 'temp': temp})
+        if command:
+            exec(command['code'], {'data': data, 'temp': temp})
+        else:
+            print("Не знаю команды с таким id", id)
     return jsonify(data)
