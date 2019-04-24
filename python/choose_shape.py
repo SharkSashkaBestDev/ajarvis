@@ -17,3 +17,5 @@ def choose_shape(data):
     except Exception as e:
         data['error'] = str(e)
     return data
+
+choose_shape(data)
