@@ -16,3 +16,5 @@ def detect_image(data):
         data['error'] = str(e)
     del data['file']
     return data
+
+detect_image(data)
