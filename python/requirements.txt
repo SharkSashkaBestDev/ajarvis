@@ -16,7 +16,11 @@ PyAutoGUI >= 0.9.41
 numpy >= 1.14.5
 
 # detect_shapes.py: 1
+# show_shapes.py: 1
 opencv_python >= 4.0.0.21
 
 # detect_img.py: 2
 PyScreeze >= 0.1.19
+
+# show_shapes.py: 2
+matplotlib >= 3.0.3
