@@ -1,18 +1,17 @@
-from importlib import import_module
-
 from flask import Flask, jsonify, request
 from pymongo import MongoClient
 
-from commands_to_json import commands # for testing
-
 
 app = Flask(__name__)
-# app.config["MONGO_URI"] = "mongodb://localhost:27017/commands"
+
 host = '127.0.0.1'
 port = 27017
-mongo = MongoClient(f'mongodb://{host}:{port}/')
-db = mongo.ajarvis
+db_name = 'ajarvis'
+collection_name = 'command'
 
+mongo = MongoClient(f'mongodb://{host}:{port}/')
+db = mongo[db_name]
+collection = db[collection_name]
 
 data = {}
 
@@ -28,7 +27,6 @@ def exec_command():
     json = request.get_json()
     data.update(json['kwargs'])
     for id in json['ids']:
-        command = commands[id] # for testing
-        # command = db['command'].find_one({"_id": id}) # for production with database
-        exec(command['code'], {'data': data, 'import_module': import_module, 'temp': temp})
+        command = collection.find_one({"_id": id})
+        exec(command['code'], {'data': data, 'temp': temp})
     return jsonify(data)

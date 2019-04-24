@@ -1,4 +1,6 @@
-import json
+import uuid
+
+from pymongo import MongoClient
 
 
 commands = {}
@@ -405,7 +407,6 @@ def detect_shape(data):
         
 
         mask = get_mask(img)
-        cv2.imwrite("mask.png", mask)
         shapes = get_shapes(mask)
         if len(shapes):
             shapes = draw_shapes(shapes, img)
@@ -471,5 +472,21 @@ else:
 
 
 if __name__ == '__main__':
-    with open('python_commands.json', 'w', encoding='utf-8') as outfile:
-        json.dump(commands, outfile, ensure_ascii=False)
+    host = '127.0.0.1'
+    port = 27017
+    db_name = 'ajarvis'
+    collection_name = 'command'
+
+    mongo = MongoClient(f'mongodb://{host}:{port}/')
+    db = mongo[db_name]
+    collection = db[collection_name]
+
+    for key, command in commands.items():
+        try:
+            file_name = key + ".py"
+            with open(file_name, 'r', encoding='utf-8') as file:
+                command['code'] = file.read()
+        except FileNotFoundError:
+            pass
+        command['_id'] = str(uuid.uuid4())
+        collection.insert_one(command)
