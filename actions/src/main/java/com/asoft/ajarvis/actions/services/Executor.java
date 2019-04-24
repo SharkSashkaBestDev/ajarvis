@@ -15,119 +15,113 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
+import java.util.Optional;
+
+import static com.asoft.ajarvis.actions.constant.GeneralConstants.*;
 
 /**
- *
- *this class execute  some Command
- *
+ *This class executes some Command
  *
  * @see Command
- *
  * @author A.T
- *
  */
 @Service
 public class Executor {
+    private static final Logger logger = LoggerFactory.getLogger(Executor.class);
 
-    private final static Logger logger = LoggerFactory.getLogger(Executor.class);
+    private static final String ARG = "arg";
+    private static final String RETURN = "return";
+    private static final String MAP = "Map";
+    private static final String CONTEXT = "context";
+    private static final String LOG = "log";
 
     @Autowired
-    CommandRepository cmdRepo;
-
+    private CommandRepository cmdRepo;
     @Autowired
-    HistoryRepository historyRepo;
+    private HistoryRepository historyRepo;
 
-private static HashMap<Language,String> servers=new HashMap<Language,String>();
+    private static HashMap<Language, String> servers=new HashMap<>();
+
     static {
-        servers.put(Language.PYTHON,"http://10.241.129.11:5000/execute");
+        servers.put(Language.PYTHON, "http://10.241.129.11:5000/execute");
     }
 
+    public StringBuilder createCode(StringBuilder code, Command cmd) {
+        StringBuilder invocation = null;
 
-    public StringBuilder createCode(StringBuilder code ,Command cmd) throws NoSuchElementException {
-        StringBuilder
-                invocation = null;
         if (cmd.getUsedCommandsIds() != null && !cmd.getUsedCommandsIds().isEmpty()) {
+            invocation = new StringBuilder().insert(0, ARG);
 
-            invocation = new StringBuilder();
-            invocation.insert(0, "arg");
+            for (String id : cmd.getUsedCommandsIds()) {
+                Optional<Command> command = cmdRepo.findById(id);
+                if (command.isPresent()) {
+                    Command existingCommand = command.get();
+                    createCode(code, existingCommand);
 
-            for (String id :
-                    cmd.getUsedCommandsIds()
-            ) {
-
-                Command current = cmdRepo.findById(id).get();
-                createCode(code ,current);
-
-                invocation.insert(0, current.getName() + "(");
-                invocation.append(")");
+                    invocation.insert(0, existingCommand.getName() + OPEN_PARENTHESIS);
+                    invocation.append(CLOSE_PARENTHESIS);
+                }
             }
 
-
-            invocation.append(";\n");
-            invocation.insert(0, " return ");
-
+            invocation.append(SEMICOLON.concat(NEWLINE));
+            invocation.insert(0, SPACE.concat(RETURN).concat(SPACE));
         }
-        code.append("\n Map " + " " + cmd.getName() + "(" + " Map " + " arg ){\n");
+
+        code.append(
+            NEWLINE.concat(SPACE).concat(MAP).concat(SPACE).concat(cmd.getName()).concat(CLOSE_PARENTHESIS)
+                .concat(SPACE).concat(MAP).concat(SPACE).concat(ARG).concat(SPACE).concat(CLOSE_PARENTHESIS)
+                .concat(OPEN_CURLY_BRACE).concat(NEWLINE)
+        );
+
+        //TODO: reorganize to more readable code
         if (cmd.getCode() != null) {
             if (cmd.getLanguage() != null) {
                 switch (cmd.getLanguage()) {
                     case PYTHON:
-                        code.append("ArrayList<String> ids = new ArrayList<>();ids.add(\"\\\""+cmd.getId()+"\\\"\");return context.getBean('request').sendRequest(\""+servers.get(Language.PYTHON)+"\",ids, arg);");
+                        code.append(
+                            String.format("ArrayList<String> ids = new ArrayList<>();" +
+                                "ids.add(\"\\\"%s\\\"\");" +
+                                "return context.getBean('request').sendRequest(\"%s\",ids, arg);",
+                                    cmd.getId(), servers.get(Language.PYTHON))
+                        );
                         break;
                     case JAVA:
-                        code.append(cmd.getCode() + " ");
+                        code.append(cmd.getCode().concat(SPACE));
                         break;
-
+                    default:
+                        break;
                 }
             } else {
-                code.append(cmd.getCode() + " ");
-
+                code.append(cmd.getCode().concat(SPACE));
             }
-
-
         }
 
-        if (invocation != null) {
-            code.append(invocation);
-        }
+        code.append(invocation != null ? invocation : EMPTY);
+        code.append(NEWLINE.concat(CLOSE_CURLY_BRACE).concat(SEMICOLON));
 
-        code.append("\n};");
+        code.insert(0, cmd.getImports() != null ? cmd.getImports() : EMPTY);
 
-
-
-
-        if (cmd.getImports() != null) {
-            code.insert(0,cmd.getImports());
-        }
         return code;
-
     }
 
-
-    public Object execute(final Command cmd, Object args) throws NoSuchElementException {
+    public Object execute(final Command cmd, Object args) {
         try {
-
-
             GroovyShell shell = new GroovyShell();
-            shell.setVariable("arg", args);
-            shell.setVariable("context", AjarvisApplication.context);
-            shell.setVariable("log", LoggerFactory.getLogger(cmd.getId()));
+            shell.setVariable(ARG, args);
+            shell.setVariable(CONTEXT, AjarvisApplication.getContext());
+            shell.setVariable(LOG, LoggerFactory.getLogger(cmd.getId()));
 
             StringBuilder code = createCode(new StringBuilder(), cmd);
 
-            return shell.run(code.toString() + "return " + cmd.getName() + "(arg);",
-                    "myscript.groovy", Collections.emptyList());
+            return shell.run(code.toString().concat(RETURN).concat(SPACE).concat(cmd.getName())
+                            .concat(OPEN_PARENTHESIS).concat(ARG).concat(CLOSE_PARENTHESIS).concat(SEMICOLON),
+                            "myscript.groovy", Collections.emptyList());
         } catch (Exception e) {
-
-            logger.error("Execute failture in "+cmd.getId()+"command with :", e);
+            logger.error(String.format("Execution failure in %s command with error message: %s", cmd.getId(), e.getMessage()));
             return e;
-        }
-        finally {
-
+        } finally {
             historyRepo.save( new HistoryRecord(cmd.getId()));
-            logger.info("History was updated : record was added");
-
+            logger.info("History was updated: new record was added");
         }
     }
-
 }
