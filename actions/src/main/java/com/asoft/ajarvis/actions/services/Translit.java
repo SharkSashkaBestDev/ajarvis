@@ -44,8 +44,8 @@ public class Translit {
     public static String translit(String str) {
         StringBuilder resultStr = new StringBuilder(str.length());
 
-        for (int i = 0; i<str.length(); i++) {
-            String l = str.substring(i, i+1);
+        for (int i = 0; i < str.length(); i++) {
+            String l = str.substring(i, i + 1);
             resultStr.append(letters.getOrDefault(l, l));
         }
 

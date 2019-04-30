@@ -34,7 +34,8 @@ public class Filter {
                 if (!commands.isEmpty()) {
                     break;
                 }
-            } catch (NoSuchElementException ignored) {}
+            } catch (NoSuchElementException ignored) {
+            }
         }
 
         if (commands == null) return null;
@@ -79,9 +80,9 @@ public class Filter {
         return result;
     }
 
-    public void addParam( Command commands, Map result){
+    public void addParam(Command commands, Map result) {
         LinkedHashMap<String, Object> paramType = (LinkedHashMap<String, Object>) commands.getParamType();
         Set<String> strings = paramType.keySet();
-        strings.stream().forEach(s-> result.put(s, paramType.get(s)));
+        strings.stream().forEach(s -> result.put(s, paramType.get(s)));
     }
 }

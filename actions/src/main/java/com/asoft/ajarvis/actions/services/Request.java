@@ -23,7 +23,7 @@ public class Request {
     private static final String APPLICATION_JSON = "application/json";
     private static final String UTF_8 = "UTF-8";
 
-    public  Map<String, Object> sendRequest(String hostAddress, List<String> ids, Map<String, Object> arg){
+    public Map<String, Object> sendRequest(String hostAddress, List<String> ids, Map<String, Object> arg) {
         HttpClient httpClient = HttpClientBuilder.create().build(); // Use this instead
         logger.info(String.format("Request with (%s,%s,%s)", hostAddress, ids, arg));
 
@@ -31,8 +31,8 @@ public class Request {
             HttpPost request = new HttpPost(hostAddress);
 
             StringEntity params = new StringEntity(
-                String.format("{\"ids\":%s, \n\t\"kwargs\":\n%s}", ids.toString(), new ObjectMapper().writeValueAsString(arg)),
-                UTF_8);
+                    String.format("{\"ids\":%s, \n\t\"kwargs\":\n%s}", ids.toString(), new ObjectMapper().writeValueAsString(arg)),
+                    UTF_8);
             request.addHeader(CONTENT_TYPE, APPLICATION_JSON);
             request.setEntity(params);
 
@@ -41,7 +41,7 @@ public class Request {
             logger.info(String.format("Response: %s\n\t\t\t%s", response.toString(), response.getStatusLine()));
 
             String resultJson = new BasicResponseHandler().handleResponse(response);
-            HashMap<String,Object> result = new ObjectMapper().readValue(resultJson, HashMap.class);
+            HashMap<String, Object> result = new ObjectMapper().readValue(resultJson, HashMap.class);
             return result;
         } catch (Exception ex) {
             logger.error("Request error", ex.getMessage());
