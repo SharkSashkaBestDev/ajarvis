@@ -11,13 +11,16 @@ Content-Type: application/json
   "code": "package com.asoft.ajarvis;import javazoom.jl.player.Player;class SampleMP3player{ String filename; Player player; int seconds = 10; SampleMP3player(fn) { this.filename = fn; if (!new File(this.filename).exists() || (!this.filename.toLowerCase().endsWith('.mp3')) ) { println 'fatal: need mp3 file name as parameter. Not found -> sound clip:'+this.filename; help(); }}; SampleMP3player(fn, secs) { this(fn); this.seconds = secs as Integer; }; void close() { if (player != null) player.close() }; void play() { try { FileInputStream fis = new FileInputStream(filename); BufferedInputStream bis = new BufferedInputStream(fis); player = new Player(bis); } catch (Exception e) { println('Problem playing file ' + filename); println e }; new Thread() { void run() { try { player.play() } catch (Exception x) { println x }}}.start(); }; def static help() { println 'groovy -classpath .:jl1.0.1.jar SampleMP3player. fatal: need mp3 file name as parameter'; println '=== end ==='; System.exit(1) }; static void main(String[] args) { println '=== start ==='; String soundfilename = '/Users/alexandrmyagkiy/Music/woodkid-run-boy-run.mp3'; SampleMP3player mp3; if (args.size() == 1) { mp3 = new SampleMP3player(soundfilename, args[1]); } else { mp3 = new SampleMP3player(soundfilename); }; mp3.play(); sleep(mp3.seconds * 1000); println 'ready to close() after ${mp3.seconds} seconds'; mp3.close(); System.exit(0); println '=== end ==='; }}"
 }
 ###
-### POST for creation
+#                         DEfault
+## POST for creation
 POST http://localhost:8091/ajarvis/commands
 Content-Type: application/json
 
-{
-  "name": "Command 1",
-  "code": " itn 2 "}
+{ "name":"chain",
+  "phrase":"conect",
+  "code":"return context.getBean('request').sendRequest(arg.get('ids'), arg);",
+  "language":"JAVA"
+}
 ###
 
 ## POST for creation
@@ -25,18 +28,18 @@ POST http://localhost:8091/ajarvis/commands
 Content-Type: application/json
 
 {
-  "name": "Command 2",
-
-  "code":  "Integer close(Integer a) { \nreturn a+2 ; };\n return close(arg[0]);\n"}
+  "name":"AddCommand",
+  "phrase":"addCommand",
+  "code":"List<String> includedcmd=null;if(arg.get('includedCommand')!=null){includedcmd=arg.get('includedCommand')}; String code=null;if(arg.get('code')!=null){code=arg.get('code')};String imports=null;if(arg.get('imports')!=null){imports=arg.get('imports')};context.getBean('commandService').createCommand(arg.get('phraseCmd'),imports,code,includedcmd);return arg;"
+}
 ###
 
 POST http://localhost:8091/ajarvis/commands
 Content-Type: application/json
 
-{
-  "name": "addString",
-
-  "code":  "Map<String,Object> addString(Map<String,Object> arg ){ arg.put(\"one\",2);return arg;};"
+{ "name":"delCommand",
+  "phrase":"delCommand",
+  "code":"context.getBean('commandService').delete(arg.get('phraseCmd'));return arg; "
 }
 ###
 
@@ -45,59 +48,16 @@ POST http://localhost:8091/ajarvis/commands
 Content-Type: application/json
 
 {
-  "name": "printArg",
-  "phrase": "go",
-  "returnType":"Void",
-  "paramType":"Map<String,Object>",
-  "code":  " println(arg);log.info('worked'); return null;"
+
 }
 ###
-POST http://localhost:8091/ajarvis/commands
-Content-Type: application/json
 
-{
-  "name": "addArg",
-  "phrase": "end",
-  "imports": "import java.util.ArrayList;\nimport java.util.Date;",
-  "returnType":"Map<String,Object>",
-  "paramType":"Map<String,Object>",
-  "code":  " arg.put(\"do\",3);println(arg);return arg;"
-}
-
-
-###
-
-POST http://localhost:8091/ajarvis/commands
-Content-Type: application/json
-
-{
-  "name": "chain",
-  "phrase": " goWork",
-
-  "code":  "println('work')"
-}
-####
-###
-
-POST http://localhost:8091/ajarvis/commands
-Content-Type: application/json
-
-{
-  "name": "AddCommand",
-
-  "phrase": "addCommand",
-
-  "code": "List<String> includedcmd=null;if(arg.get('includedCommand')!=null){includedcmd=arg.get('includedCommand')}; String code=null;if(arg.get('code')!=null){code=arg.get('code')};String imports=null;if(arg.get('imports')!=null){imports=arg.get('imports')};context.getBean('commandCreator').createCommand(arg.get('phraseCmd'),imports,code,includedcmd);return arg;"
-}
 ####
 
 POST http://localhost:8091/ajarvis/commands
 Content-Type: application/json
 
 {
-  "name": "delCommand",
 
-  "phrase": "delCommand",
-  "code": "context.getBean('commandCreator').delete(arg.get('phraseCmd'));return arg; "
 }
 #####

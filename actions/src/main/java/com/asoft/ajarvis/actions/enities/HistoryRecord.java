@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 
 @Data
@@ -12,6 +13,7 @@ public class HistoryRecord {
     private String id;
     private String command;
     private Date time;
+    private Map<String, Object> arg;
 
     public HistoryRecord() {
         this.id = UUID.randomUUID().toString();
@@ -21,5 +23,11 @@ public class HistoryRecord {
     public HistoryRecord(String command) {
         this();
         this.command = command;
+    }
+
+    public HistoryRecord(String command, Map<String, Object> arg) {
+        this();
+        this.command = command;
+        this.arg = arg;
     }
 }

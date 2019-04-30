@@ -14,7 +14,7 @@ import static com.asoft.ajarvis.actions.constant.GeneralConstants.SPACE;
 import static com.asoft.ajarvis.actions.constant.GeneralConstants.UNDERSCORE;
 
 @Service
-public class CommandEditor {
+public class CommandService {
     @Autowired
     private CommandRepository repo;
 

@@ -12,10 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 import static com.asoft.ajarvis.actions.constant.GeneralConstants.*;
 
@@ -104,23 +101,27 @@ public class Executor {
         return code;
     }
 
-    public Object execute(final Command cmd, Object args) {
+    public Object excuteCmd(final Command cmd, Map<String, Object>  args){
+        GroovyShell shell = new GroovyShell();
+        shell.setVariable(ARG, args);
+        shell.setVariable(CONTEXT, AjarvisApplication.getContext());
+        shell.setVariable(LOG, LoggerFactory.getLogger(cmd.getId()));
+
+        StringBuilder code = createCode(new StringBuilder(), cmd);
+
+        return shell.run(code.toString().concat(RETURN).concat(SPACE).concat(cmd.getName())
+                        .concat(OPEN_PARENTHESIS).concat(ARG).concat(CLOSE_PARENTHESIS).concat(SEMICOLON),
+                "myscript.groovy", Collections.emptyList());
+    }
+
+    public Object execute(final Command cmd, Map<String, Object>  args) {
         try {
-            GroovyShell shell = new GroovyShell();
-            shell.setVariable(ARG, args);
-            shell.setVariable(CONTEXT, AjarvisApplication.getContext());
-            shell.setVariable(LOG, LoggerFactory.getLogger(cmd.getId()));
-
-            StringBuilder code = createCode(new StringBuilder(), cmd);
-
-            return shell.run(code.toString().concat(RETURN).concat(SPACE).concat(cmd.getName())
-                            .concat(OPEN_PARENTHESIS).concat(ARG).concat(CLOSE_PARENTHESIS).concat(SEMICOLON),
-                            "myscript.groovy", Collections.emptyList());
+            return excuteCmd(cmd,args);
         } catch (Exception e) {
             logger.error(String.format("Execution failure in %s command with error message: %s", cmd.getId(), e.getMessage()));
             return e;
         } finally {
-            historyRepo.save( new HistoryRecord(cmd.getId()));
+            historyRepo.save( new HistoryRecord(cmd.getId(),args));
             logger.info("History was updated: new record was added");
         }
     }
