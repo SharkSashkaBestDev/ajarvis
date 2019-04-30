@@ -11,4 +11,5 @@ import java.util.List;
 public interface HistoryRepository extends MongoRepository<HistoryRecord, String> {
     List<HistoryRecord> findAll();
     Iterable<HistoryRecord> findAllByTimeGreaterThan(Date date);
+    Iterable<HistoryRecord> findAllByOrderByTimeDesc();
 }
