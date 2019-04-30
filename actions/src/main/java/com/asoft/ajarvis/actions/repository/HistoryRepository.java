@@ -12,4 +12,5 @@ public interface HistoryRepository extends MongoRepository<HistoryRecord, String
     List<HistoryRecord> findAll();
     Iterable<HistoryRecord> findAllByTimeGreaterThan(Date date);
     Iterable<HistoryRecord> findAllByOrderByTimeDesc();
+    Iterable<HistoryRecord> findAllByIdIn(List<String> ids);
 }

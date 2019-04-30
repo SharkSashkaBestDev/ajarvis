@@ -3,10 +3,7 @@ package com.asoft.ajarvis.actions.enities;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Data
 public class HistoryRecord {
@@ -15,7 +12,7 @@ public class HistoryRecord {
     private String command;
     private Date time;
     private Map<String, Object> arg;
-    private ArrayList<String> commandIds;
+    private List<String> commandIds;
 
 
     public HistoryRecord() {
@@ -34,7 +31,7 @@ public class HistoryRecord {
         this.arg = arg;
     }
 
-    public HistoryRecord(ArrayList<String> commandIds) {
+    public HistoryRecord(List<String> commandIds) {
         this();
         this.commandIds = commandIds;
     }
