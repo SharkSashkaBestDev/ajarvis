@@ -58,11 +58,11 @@ public class CommandController {
     }
 
     /**
-     *  Executes a command
+     * Executes a command
      */
     @PostMapping(value = "/execute",
-        consumes = MediaType.APPLICATION_JSON_VALUE,
-        produces = MediaType.APPLICATION_JSON_VALUE
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public Object executeCommand(@RequestBody(required = false) Map<String, Object> args) {

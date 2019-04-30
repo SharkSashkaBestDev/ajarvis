@@ -12,15 +12,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.asoft.ajarvis.actions.constant.GeneralConstants.*;
 
 /**
- *This class executes some Command
+ * This class executes some Command
  *
- * @see Command
  * @author A.T
+ * @see Command
  */
 @Service
 public class Executor {
@@ -37,7 +40,7 @@ public class Executor {
     @Autowired
     private HistoryRepository historyRepo;
 
-    private static HashMap<Language, String> servers=new HashMap<>();
+    private static HashMap<Language, String> servers = new HashMap<>();
 
     static {
         servers.put(Language.PYTHON, "http://10.241.129.11:5000/execute");
@@ -65,9 +68,9 @@ public class Executor {
         }
 
         code.append(
-            NEWLINE.concat(SPACE).concat(MAP).concat(SPACE).concat(cmd.getName()).concat(CLOSE_PARENTHESIS)
-                .concat(SPACE).concat(MAP).concat(SPACE).concat(ARG).concat(SPACE).concat(CLOSE_PARENTHESIS)
-                .concat(OPEN_CURLY_BRACE).concat(NEWLINE)
+                NEWLINE.concat(SPACE).concat(MAP).concat(SPACE).concat(cmd.getName()).concat(CLOSE_PARENTHESIS)
+                        .concat(SPACE).concat(MAP).concat(SPACE).concat(ARG).concat(SPACE).concat(CLOSE_PARENTHESIS)
+                        .concat(OPEN_CURLY_BRACE).concat(NEWLINE)
         );
 
         //TODO: reorganize to more readable code
@@ -76,10 +79,10 @@ public class Executor {
                 switch (cmd.getLanguage()) {
                     case PYTHON:
                         code.append(
-                            String.format("ArrayList<String> ids = new ArrayList<>();" +
-                                "ids.add(\"\\\"%s\\\"\");" +
-                                "return context.getBean('request').sendRequest(\"%s\",ids, arg);",
-                                    cmd.getId(), servers.get(Language.PYTHON))
+                                String.format("ArrayList<String> ids = new ArrayList<>();" +
+                                                "ids.add(\"\\\"%s\\\"\");" +
+                                                "return context.getBean('request').sendRequest(\"%s\",ids, arg);",
+                                        cmd.getId(), servers.get(Language.PYTHON))
                         );
                         break;
                     case JAVA:
@@ -101,7 +104,7 @@ public class Executor {
         return code;
     }
 
-    public Object excuteCmd(final Command cmd, Map<String, Object>  args){
+    public Object excuteCmd(final Command cmd, Map<String, Object> args) {
         GroovyShell shell = new GroovyShell();
         shell.setVariable(ARG, args);
         shell.setVariable(CONTEXT, AjarvisApplication.getContext());
@@ -114,14 +117,14 @@ public class Executor {
                 "myscript.groovy", Collections.emptyList());
     }
 
-    public Object execute(final Command cmd, Map<String, Object>  args) {
+    public Object execute(final Command cmd, Map<String, Object> args) {
         try {
-            return excuteCmd(cmd,args);
+            return excuteCmd(cmd, args);
         } catch (Exception e) {
             logger.error(String.format("Execution failure in %s command with error message: %s", cmd.getId(), e.getMessage()));
             return e;
         } finally {
-            historyRepo.save( new HistoryRecord(cmd.getId(),args));
+            historyRepo.save(new HistoryRecord(cmd.getId(), args));
             logger.info("History was updated: new record was added");
         }
     }
