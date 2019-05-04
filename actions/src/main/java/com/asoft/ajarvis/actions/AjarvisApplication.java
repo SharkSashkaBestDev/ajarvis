@@ -13,7 +13,7 @@ public class AjarvisApplication {
     private static ConfigurableApplicationContext context;
 
     public static void main(String[] args) {
-        SpringApplication.run(AjarvisApplication.class, args);
+        context=SpringApplication.run(AjarvisApplication.class, args);
         logger.info("AJarvis application started");
     }
 

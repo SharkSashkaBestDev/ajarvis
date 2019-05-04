@@ -68,7 +68,7 @@ public class Executor {
         }
 
         code.append(
-                NEWLINE.concat(SPACE).concat(MAP).concat(SPACE).concat(cmd.getName()).concat(CLOSE_PARENTHESIS)
+                NEWLINE.concat(SPACE).concat(MAP).concat(SPACE).concat(cmd.getName()).concat(OPEN_PARENTHESIS)
                         .concat(SPACE).concat(MAP).concat(SPACE).concat(ARG).concat(SPACE).concat(CLOSE_PARENTHESIS)
                         .concat(OPEN_CURLY_BRACE).concat(NEWLINE)
         );
