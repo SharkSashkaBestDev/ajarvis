@@ -79,7 +79,8 @@ public class CommandController {
 
     @PostMapping(value = "/filter")
     public Object filter(@RequestBody Map<String, Object> args) {
-        String phrase = filterService.filter(args.get(PHRASE).toString()).get(PHRASE).toString();
+        args=filterService.filter(args.get(PHRASE).toString());
+        String phrase = args.get(PHRASE).toString();
 
         return phrase.isEmpty() ? null : args;
     }
