@@ -40,16 +40,7 @@ public class CommandController {
         return repository.findAll();
     }
 
-    @GetMapping("/history")
-    public Iterable<HistoryRecord> getHistory(@RequestParam Date dt) {
-        if (dt != null) {
-            logger.info("Returning history by date");
-            return historyRepo.findAllByTimeGreaterThan(dt);
-        }
 
-        logger.info("Returning total history");
-        return historyRepo.findAll();
-    }
 
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)

@@ -39,7 +39,7 @@ public class HistoryService {
         int begin =beginO.isPresent()?beginO.getAsInt():0;
         int end =endO.isPresent()?endO.getAsInt():records.size();
 
-        records = (ArrayList) records.subList(begin, end);
+        records = new ArrayList<HistoryRecord> (records.subList(begin, end));
 
 
         try {
