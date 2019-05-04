@@ -54,6 +54,11 @@ POST http://localhost:8091/ajarvis/commands
 Content-Type: application/json
 
 {
+  "name": "executeHistory",
+  "phrase": "exec histry",
+  "code": "OptionalInt begin = arg.get('begin')=null?OptionalInt.of(arg.get('begin')):OptionalInt.empty();OptionalInt end = arg.get('end')=null?OptionalInt.of(arg.get('end')):OptionalInt.empty(); context.getBean('historyService').executeHistory(begin,end);return arg;",
+  "paramType": {"begin": "int","end": "int "},
+  "returnType": {"begin": "int","end": "int "}
 }
 
 ###

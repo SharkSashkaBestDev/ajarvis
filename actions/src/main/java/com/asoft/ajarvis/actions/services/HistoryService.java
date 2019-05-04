@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,10 +30,15 @@ public class HistoryService {
     private Executor executor;
 
 
-    public void executeHistory(int begin, int end) {
+    public void executeHistory(OptionalInt   beginO, OptionalInt   endO) {
+
 
         ArrayList<HistoryRecord> records =
                 (ArrayList) historyRepository.findAllByOrderByTimeDesc();
+
+        int begin =beginO.isPresent()?beginO.getAsInt():0;
+        int end =endO.isPresent()?endO.getAsInt():records.size();
+
         records = (ArrayList) records.subList(begin, end);
 
 
@@ -70,6 +76,14 @@ public class HistoryService {
             }
         }
     }
+
+    public long  getCount(){
+
+        return historyRepository.count();
+
+    }
+
+
 
 
 }
