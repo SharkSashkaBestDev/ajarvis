@@ -105,6 +105,18 @@ commands['detect_shapes'] = {
      }
 }
 
+commands['detect_text'] = {
+    'name': 'detect_text',
+    'phrase': ['найди фразу', 'найди текст'],
+    'paramType': {
+        'phrase': 'str'
+     },
+    'returnType': {
+        'shapes': 'Array((int, int))',
+        'img': 'path'
+     }
+}
+
 commands['show_shapes'] = {
     'name': 'show_shapes',
     'phrase': ['покажи найденное'],
