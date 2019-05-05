@@ -1,5 +1,6 @@
 from collections import namedtuple
-from itertools import permutations
+from functools import lru_cache
+from itertools import product
 import re
 
 import cv2
@@ -16,7 +17,7 @@ def detect_text(data):
 
     text = "".join(found['char'])
 
-    red = re.compile('[,.@|:;—<>=+-^"`!?()*&%$#_»«\n~…®©\'“”№{}›‘]')
+    red = re.compile('[,.@|:;—<>=+-^"`!?()*&%$#_»«\n~…®©\'“”№{}›‘°„]')
     re_space = re.compile('\s+')
 
     phrase = red.sub(' ', phrase.lower())
@@ -33,46 +34,66 @@ def detect_text(data):
 
     text = "".join(found['char']).lower()
 
-    words = phrase.split()
+    words = tuple(phrase.split())
     n_words = len(words)
     matches = []
     n_min = (2 if n_words > 4 else (2 if n_words > 1 else 1)) - 1
     Match = namedtuple('m', ['l', 'r'])
 
-    for i in range(n_words, n_min, -1):
-        combs = n_words - i + 1
-        for j in range(combs):
-            ws = words[j:j+i]
-            matchs = list(re.finditer("".join(ws), text))
-            if matchs:
-                for m in matchs:
-                    mat = Match(*m.span())
-                    cond = all([mat.l > v.r or mat.r < v.l for v in matches])
-                    if cond: 
-                        matches.append(mat)
+    @lru_cache(maxsize=128)
+    def find(words):
+        res = []
+        ms = list(re.finditer("".join(words), text))
+        if ms:
+            for m in ms:
+                mat = Match(*m.span())
+                if all([mat.l > v.r or mat.r < v.l or (mat.l <= v.l and v.r <= mat.r) for v in matches]):
+                    res.append(mat)
+            matches.extend(res)
+        return res
+
+    result = []
+
+    def f(words, mss, n):
+        if not words: 
+            return None
+        for j in range(len(words), n_min, -1):
+            ws = words[:j]
+            n += len(ws)
+            ms = find(ws)
+            if ms:
+                mss.append(ms)
+                if n == n_words:
+                    result.append(mss.copy())
+                    mss.pop()
+                    n -= len(ws)
+                    continue
+                f(words[j:], mss, n)
+                mss.pop()
+            n -= len(ws)
+
+    f(words, [], 0)
 
     rects = []
-    new_ph = "".join(words)
-    ph_len = len(new_ph)
+    for res in result:
+        for ms in product(*res):
+            r_pre = ms[0].l
+            right_max = top_max = 0
+            bottom_min = left_min = SCREEN_X
+            for m in ms:
+                diff = m.l - r_pre
+                if diff > 300 or diff < 0:
+                    break
+                for j in range(m.l, m.r):
+                    if found['left'][j] < left_min: left_min = found['left'][j]
+                    if found['right'][j] > right_max: right_max = found['right'][j]
+                    if found['bottom'][j] < bottom_min: bottom_min = found['bottom'][j]
+                    if found['top'][j] > top_max: top_max = found['top'][j]
+                r_pre = m.r
+            else:
+                rects.append(((left_min, SCREEN_Y-top_max), (right_max, SCREEN_Y-bottom_min)))
 
-    for i in range(1, min(n_words, len(matches))+1):
-        min_combs = []
-        for ms in permutations(matches, i):
-            size = sum([m.r - m.l for m in ms])
-            if ph_len == size:
-                sentence = "".join([text[m.l : m.r] for m in ms])
-                max_dist = max([abs(ms[j+1].l - ms[j].r) for j in range(len(ms) - 1)], default=0)
-                if sentence == new_ph and max_dist < 400:
-                    right_max = top_max = 0
-                    bottom_min = left_min = SCREEN_X
-                    for m in ms:
-                        for j in range(m.l, m.r):
-                            if found['left'][j] < left_min: left_min = found['left'][j]
-                            if found['right'][j] > right_max: right_max = found['right'][j]
-                            if found['bottom'][j] < bottom_min: bottom_min = found['bottom'][j]
-                            if found['top'][j] > top_max: top_max = found['top'][j]
-                    rects.append(((left_min, SCREEN_Y-top_max), (right_max, SCREEN_Y-bottom_min)))
-
+    print("Найдено", len(rects))
 
     centers = []
     rects = sorted(rects, key=lambda x: x[0][::-1])
@@ -84,8 +105,11 @@ def detect_text(data):
             (255, 128, 0), 2)
         centers.append(center)
 
-    cv2.imwrite('detected_objects.png', img)
+    file_name = 'detected_text.png'
+    cv2.imwrite(file_name, img)
     data['shapes'] = centers
+    data['img'] = file_name
     return data
+
 
 detect_text(data)
