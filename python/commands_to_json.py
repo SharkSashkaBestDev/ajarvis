@@ -18,6 +18,15 @@ commands['make_click'] = {
     }
 }
 
+commands['open_browser'] = {
+    'name': 'open_browser',
+    'phrase': ['открой браузер'],
+    'paramType': {
+    },
+    'returnType': {
+    }
+}
+
 commands['detect_image'] = {
     'name': 'detect_image',
     'phrase': ['найди картинку', 'найди изображение'],

@@ -1,4 +1,5 @@
 # AJarvis Project
+## Python part
 
 Для работы некоторых команд требуется установка дополнительных библиотек:
 - [Tesseract](https://github.com/tesseract-ocr/tesseract/wiki)
