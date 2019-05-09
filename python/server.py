@@ -1,13 +1,14 @@
 from flask import Flask, jsonify, request
 from pymongo import MongoClient
 
+import mongo_config
 
 app = Flask(__name__)
 
-host = '127.0.0.1'
-port = 27017
-db_name = 'ajarvis'
-collection_name = 'command'
+host = mongo_config.host
+port = mongo_config.port
+db_name = mongo_config.database
+collection_name = mongo_config.collection
 
 mongo = MongoClient(f'mongodb://{host}:{port}/')
 db = mongo[db_name]
@@ -36,6 +37,6 @@ def exec_command():
                 status_code = 404
                 break
     except Exception as ex:
-        data['error'] = ex
+        data['error'] = str(ex)
         status_code = 500
     return jsonify(data), status_code

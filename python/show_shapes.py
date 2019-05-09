@@ -12,7 +12,7 @@ def show_shapes(data):
 import cv2
 import matplotlib.pyplot as plt
 img = cv2.imread(data['img'])
-if img:
+if img is not None:
     img = cv2.resize(img, (int(img.shape[1]/1.1), int(img.shape[0]/1.1)))
     img = img[:, :, ::-1]
     dpi = 120

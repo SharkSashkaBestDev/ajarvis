@@ -6,6 +6,7 @@ import re
 import cv2
 import pyautogui
 import pytesseract
+import numpy as np
 
 
 def detect_text(data):
@@ -97,16 +98,17 @@ def detect_text(data):
 
     centers = []
     rects = sorted(rects, key=lambda x: x[0][::-1])
+    img = np.array(img)
     for i, rect in enumerate(rects):
         cv2.rectangle(img, *rect, (0, 255, 0), 2)
         center = rect[0][0] + (rect[1][0] - rect[0][0]) // 2, rect[0][1] + (rect[1][1] - rect[0][1]) // 2 
         cv2.putText(img, str(i), center, 
             cv2.FONT_HERSHEY_SIMPLEX, 1, 
-            (255, 128, 0), 2)
+            (0, 128, 255), 2)
         centers.append(center)
 
     file_name = 'detected_text.png'
-    cv2.imwrite(file_name, img)
+    cv2.imwrite(file_name, cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
     data['shapes'] = centers
     data['img'] = file_name
     return data

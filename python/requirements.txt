@@ -19,6 +19,7 @@ PyScreeze >= 0.1.19
 matplotlib >= 3.0.3
 
 # detect_shapes.py: 2
+# detect_text.py: 9
 numpy >= 1.16.2
 
 # detect_shapes.py: 1
