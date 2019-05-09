@@ -9,10 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.OptionalInt;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,17 +27,22 @@ public class HistoryService {
     private Executor executor;
 
 
-    public void executeHistory(OptionalInt   beginO, OptionalInt   endO) {
-
-
+    public List<String> getIdsList(OptionalInt   beginO, OptionalInt   endO){
         ArrayList<HistoryRecord> records =
                 (ArrayList) historyRepository.findAllByOrderByTimeDesc();
 
         int begin =beginO.isPresent()?beginO.getAsInt():0;
         int end =endO.isPresent()?endO.getAsInt():records.size();
 
-        records = new ArrayList<HistoryRecord> (records.subList(begin, end));
+        records = new ArrayList<> (records.subList(begin, end));
 
+        return records.stream().map(HistoryRecord::getId).collect(Collectors.toList());
+
+    }
+
+    public void executeHistory(List<String> ids) {
+
+        ArrayList<HistoryRecord> records = (ArrayList)historyRepository.findAllByIdIn(ids);
 
         try {
             records.stream().forEach((s) -> {
@@ -77,13 +79,14 @@ public class HistoryService {
         }
     }
 
-    public long  getCount(){
-
-        return historyRepository.count();
-
+    public Map getArgsofHistoryRec(String id){
+        Optional<HistoryRecord> cmd = historyRepository.findById(id);
+        return cmd.isPresent()?cmd.get().getArg():null;
     }
 
-
-
+    public Map getResultfHistoryRec(String id ){
+        Optional<HistoryRecord> cmd = historyRepository.findById(id);
+        return cmd.isPresent()?cmd.get().getResult():null;
+    }
 
 }

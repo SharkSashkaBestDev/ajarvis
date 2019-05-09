@@ -54,11 +54,12 @@ POST http://localhost:8091/ajarvis/commands
 Content-Type: application/json
 
 {
-  "name": "executeHistory",
-  "phrase": "exec histry",
-  "code": "OptionalInt begin = arg.get('begin')==null?OptionalInt.of(arg.get('begin')):OptionalInt.empty();OptionalInt end = arg.get('end')==null?OptionalInt.of(arg.get('end')):OptionalInt.empty(); context.getBean('historyService').executeHistory(begin,end);return arg;",
-  "paramType": {"begin": "int","end": "int "},
-  "returnType": {"begin": "int","end": "int "}
+  "name":"getHistoryIdsList",
+  "phrase":"get historyIdsList",
+  "code":"OptionalInt begin = arg.get('begin')!=null?OptionalInt.of(arg.get('begin')):OptionalInt.empty();OptionalInt end = arg.get('end')!=null?OptionalInt.of(arg.get('end')):OptionalInt.empty();ArrayList<String> ids=context.getBean('historyService').getIdsList(begin,end);arg.put('ids',ids);return arg;",
+  "paramType":{"begin":"int","end":"int "},
+  "returnType":{"begin":"int","end":"int "},
+  "language":"JAVA"
 }
 
 ###
@@ -69,6 +70,12 @@ POST http://localhost:8091/ajarvis/commands
 Content-Type: application/json
 
 {
+  "name":"executeHistory",
+  "phrase":"exec histry",
+  "code":"ArrayList<String> ids = arg.get('ids')!=null?arg.get('ids'):null;if (ids == null || ids.isEmpty()) {log.error('ids is not existing or empty');return arg ;}; context.getBean('historyService').executeHistory(ids);return arg;",
+  "paramType":{"ids":"HistoryId["},
+  "returnType":{"ids":"HistoryId["},
+  "language":"JAVA"
 }
 
 #####
