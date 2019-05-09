@@ -4,12 +4,12 @@
 Для работы  требуется установка :
 - [MongoDb](https://www.mongodb.com/)
 
-Для конфигурации нужно заполнить в  файле `application.properties` такие поля : <br>
+Для конфигурации нужно заполнить в  файле [application.properties](https://github.com/SharkSashkaBestDev/ajarvis/blob/feature/Aj-33/actions/src/main/resources/application.properties) такие поля : <br>
 - `server.port`порт приложения  по умолчанию стоит 8091
 - `spring.data.mongodb.host`  адресс приложения по умолчанию стоит 127.0.0.1
 - `spring.data.mongodb.database` название базы для приложения
 
-Для заполнения базы данных командами нужно выполнить запросы из файла `commands.http`  <br>
+Для заполнения базы данных командами нужно выполнить запросы из файла [commands.http](https://github.com/SharkSashkaBestDev/ajarvis/blob/feature/Aj-33/actions/src/main/java/com/asoft/ajarvis/actions/enities/commands.http)  <br>
 
 
 Запуск сервера осуществляется из класа `AjarvisApplication`
@@ -22,7 +22,7 @@
    }`
   
     
-    1. фраза для фильтрации :
+    - фраза для фильтрации :
         - "phrase"
     
 * для получения всех команд  нужно отправить 
@@ -37,9 +37,9 @@
   }`
   
     
-    1. фраза команды:
+    - фраза команды:
         - "phrase"
-    2. аргументы:
+    - аргументы:
         - "begin"
         - "end"
         - ...
