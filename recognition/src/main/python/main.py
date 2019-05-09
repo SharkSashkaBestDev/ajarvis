@@ -4,54 +4,92 @@ from threading import Thread
 from queue import Queue
 import requests
 
+LANG_RU = "ru-RU"
+PHRASE = "phrase"
+INT = "int"
+COMAND = "comand"
+STRING = "String"
+BASE_URL = "http://127.0.0.1:8091/ajarvis/commands/"
 
 
-def set_args(args):
+def args_check(args_type, raw_arg):
+    url = BASE_URL + "filter"
+    if args_type == INT:
+        while True:
+            try:
+                arg = int(raw_arg)
+                print(arg)
+                return arg
+            except:
+                print("Повторите попытку ввода")
+                raw_arg = recognize_exception(True)
+
+    elif args_type == STRING:
+        while True:
+            arg = raw_arg
+            if arg != "":
+                print(arg)
+                return arg
+            else:
+                print("Повторите попытку ввода")
+                raw_arg = recognize_exception(True)
+    elif args_type == COMAND:
+        while True:
+            com = requests.post(url, json={PHRASE: raw_arg})
+            try:
+                arg = com.json().pop(PHRASE)
+                print(arg)
+                return arg
+            except:
+                print("Команда не распознана или такой команды не существует, повторите")
+                raw_arg = recognize_exception(True)
+
+
+def set_args(args_description):
     global args_flag
-    cords = []
-    if args["phrase"] != None: #and args["phrase"] != ):
-        #print(args)
-        dict_of_new_phrases = {"phrase": args.pop("phrase")}
+    dict_of_new_phrases = {}
 
-        for i in args:
+    if args_description[PHRASE] is not None:
+        dict_of_new_phrases = {PHRASE: args_description.pop(PHRASE)}
+
+        for i in args_description:
             print("Введите аргумент " + i)
-            args_flag = False;
-            if i == "xy":
-                for h in args[i]:
-                    while True:
-                        try:
-                            arg = (int)(r.recognize_google(list_of_args.get(), language="ru-RU").lower())
-                            print(arg)
-                            cords.append(arg)
-                            break
-                        except:
-                            print("Повторите попытку ввода")
-                dict_of_new_phrases.update({i: cords})
-                print(dict_of_new_phrases)
-            if args[i] == "int":
-                while True:
-                    try:
-                        arg = (int)(r.recognize_google(list_of_args.get(), language="ru-RU").lower())
-                        print(arg)
-                        dict_of_new_phrases.update({i: arg})
-                        break
-                    except:
-                        print("Повторите попытку ввода")
+            args_flag = False
+            args_struct = args_description[i].split("[")
+            arg_type = len(args_struct)
+            arg = recognize_exception(True)
+            if arg_type == 1:
+                true_arg = args_check(args_struct[0], arg)
+                dict_of_new_phrases.update({i: true_arg})
+            else:
+                array_for_arguments = []
+                j = 0
+                while "стоп" not in arg.split(" ") or j < int(args_struct[1]):
+                    true_arg = args_check(args_struct[0], arg)
+                    array_for_arguments.append(true_arg)
+                    j += 1
+                    if j >= int(args_struct[1]):
+                        print("вы ввели достаточно аргументов скажите 'стоп' для остановки")
+                    arg = recognize_exception(True)
 
-            elif args[i] == "String":
-                while True:
-                    arg = r.recognize_google(list_of_args.get(), language="ru-RU").lower()
-                    if(arg != ""):
-                        print(arg)
-                        dict_of_new_phrases.update({i: arg})
-                        break
-                    else:
-                        print("Повторите попытку ввода")
+                dict_of_new_phrases.update({i: array_for_arguments})
     print("Аргументы успешно введены")
     args_flag = True
     return dict_of_new_phrases
 
 
+def recognize_exception(flag):
+    while True:
+        try:
+            if flag:
+                arg = r.recognize_google(list_of_args.get(), language=LANG_RU).lower()
+            else:
+                arg = r.recognize_google(list_of_audio.get(), language=LANG_RU).lower()
+            return arg
+        except:
+            arg = recognize_exception(flag)
+            break
+    return arg
 
 
 def listen():
@@ -60,7 +98,7 @@ def listen():
         r.adjust_for_ambient_noise(source, duration=1)
         print("Я слушаю!")
         while True:
-            aud = r.listen(source, phrase_time_limit = 5)
+            aud = r.listen(source, phrase_time_limit=5)
             if args_flag:
                 list_of_audio.put(aud)
             else:
@@ -68,47 +106,29 @@ def listen():
 
 
 def recognize():
-    url = 'http://127.0 0.1:8091/ajarvis/commands/filter'
-    url_param = 'http://127.0 0.1:8091/ajarvis/commands/execute'
-
+    url = BASE_URL + "filter"
+    url_param = BASE_URL + "execute"
 
     while True:
         try:
-            current_phrase = r.recognize_google(list_of_audio.get(), language="ru-RU").lower()
-            #frazees.append(current_phrase)
+            current_phrase = recognize_exception(False)
 
-            resoult = standard_phrases(current_phrase, )
-            if (resoult != " "):
+            resoult = standard_phrases(current_phrase)
+            if resoult != " ":
                 print(resoult)
-                var = requests.post(url, json={"phrase": resoult})
+                var = requests.post(url, json={PHRASE: resoult})
                 send_args = var.json()
-
-                print(send_args)
-
                 new_args = set_args(send_args)
-
                 print(new_args)
-
-                var_redy = requests.post(url_param, json=new_args)
-                get_args = var_redy.json()
-
-                print(get_args)
-
-            else:
-                pass
-
-
-
-        except Exception as e:
-            print(e)
-            pass
+                requests.post(url_param, json=new_args)
+        except Exception as _:
+            print("Аргументы не приняты")
         finally:
             list_of_audio.task_done()
 
 
 def standard_phrases(current_phrase):
     global end, pause_flag
-
     if end:
         if "да" in current_phrase.split(" "):
             print("Пока!")
@@ -116,36 +136,33 @@ def standard_phrases(current_phrase):
         else:
             print("Завершение отменено")
             end = False
-            return (" ")
+            return " "
 
     if "завершить" in current_phrase.split(" ") and pause_flag:
-        print ("Вы точно хотите выйти")
+        print("Вы точно хотите выйти")
         end = True
-        return (" ")
+        return " "
     if "остановить" in current_phrase.split(" ") and pause_flag:
         pause_flag = False
-        print ("Распознавание приостановлено!")
+        print("Распознавание приостановлено!")
     elif "начать" in current_phrase.split(" ") and not pause_flag:
         pause_flag = True
-        print ("Распознавание возобновлено!")
-        return (" ")
+        print("Распознавание возобновлено!")
+        return " "
     if pause_flag:
         return current_phrase
     else:
-        return (" ");
+        return " "
 
 
-
-
-
-if __name__=="__main__":
+if __name__ == "__main__":
     global end, pause_flag, args_flag
     args_flag = True
     end = False
     pause_flag = True
+
     r = sr.Recognizer()
-    r.energy_threshold = 3500  #уровень чувствительности
-    #r.operation_timeout = 5;
+    r.energy_threshold = 3500  # уровень чувствительности
     current_phrase = ""
 
     list_of_audio = Queue()
@@ -154,6 +171,5 @@ if __name__=="__main__":
     th_1 = Thread(target=listen)
     th_1.setDaemon(True)
     th_1.start()
-
 
     recognize()
