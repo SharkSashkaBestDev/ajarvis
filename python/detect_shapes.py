@@ -145,14 +145,14 @@ def detect_shapes(data):
         min_line_area = 30
         thickness = 5
         k = 3
-        is_line = data['shape'] == 'line'
+        is_line = data['shape'] == 'линия'
 
         mode = cv2.RETR_EXTERNAL
         cnts, _ = cv2.findContours(mask, mode, cv2.CHAIN_APPROX_SIMPLE)
         for c in cnts:
             if len(c) > 500: 
                 continue
-            if data['shape'] == 'rectangle':
+            if data['shape'] == 'прямоугольник':
                 is_closed = True        
                 peri = cv2.arcLength(c, is_closed)    
                 approx = cv2.approxPolyDP(c, 0.01*peri, is_closed)

@@ -25,14 +25,17 @@ def exec_command():
     data.pop('error', None)
     json = request.get_json()
     data.update(json['kwargs'])
+    status_code = 200
     try:
         for id in json['ids']:
             command = collection.find_one({"_id": id})
             if command:
                 exec(command['code'], {'data': data, 'temp': temp})
             else:
-                print("Не знаю команды с таким id", id)
+                data['error'] = "Не знаю команды с таким id " + id
+                status_code = 404
+                break
     except Exception as ex:
         data['error'] = ex
-        return jsonify(data), 500 
-    return jsonify(data)
+        status_code = 500
+    return jsonify(data), status_code

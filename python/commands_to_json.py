@@ -2,163 +2,142 @@ import json
 import uuid
 
 from pymongo import MongoClient
+from pymongo.errors import ServerSelectionTimeoutError
+
+import mongo_config
 
 
 commands = {}
 
 commands['make_click'] = {
     'name': 'click',
-    'phrase': ['кликни', 'сделай клик'],
+    'phrase': "сделай клик",
     'paramType': {
-        'xy': '(int, int)',
-        'double_click': 'boolean'
+        'xy': 'int[2'
     },
     'returnType': {
-        'xy': '(int, int)'
+        'xy': 'int[2'
+    }
+}
+
+commands['make_double_click'] = {
+    'name': 'double_click',
+    'phrase': "сделай двойной клик",
+    'paramType': {
+        'xy': 'int[2'
+    },
+    'returnType': {
+        'xy': 'int[2'
     }
 }
 
 commands['open_browser'] = {
     'name': 'open_browser',
-    'phrase': ['открой браузер'],
-    'paramType': {
-    },
-    'returnType': {
-    }
+    'phrase': 'открой браузер'
 }
 
 commands['detect_image'] = {
     'name': 'detect_image',
-    'phrase': ['найди картинку', 'найди изображение'],
+    'phrase': 'найди изображение',
     'paramType': {
         'file': 'path',
     },
     'returnType': {
-        'xy': '(int, int)'
+        'xy': 'int[2'
     }
 }
 
 commands['mouse_move'] = {
     'name': 'mouse_move',
-    'phrase': ['перемести мышку', 'передвинь мышку'],
+    'phrase': 'перемести мышку',
     'paramType': {
-        'xy': '(int, int)',
+        'xy': 'int[2',
     },
     'returnType': {
-        'xy': '(int, int)'
-    },
-    'code': """
-import pyautogui
-
-def mouse_move(data):
-    print("Mouse move")
-
-    pyautogui.moveTo(*data['xy'])
-    return data
-
-mouse_move(data)"""
+        'xy': 'int[2'
+    }
 }
 
 commands['press_enter'] = {
     'name': 'press_enter',
-    'phrase': ['нажми enter'],
-    'paramType': { },
-    'returnType': { },
-    'code': """
-import pyautogui
-
-def press_enter(data):
-    print("Press Enter")
-
-    pyautogui.press('enter')
-    return data
-
-press_enter(data)"""
+    'phrase': 'нажми enter'
 }
 
 commands['write_phrase'] = {
     'name': 'write_phrase',
-    'phrase': ['напиши'],
+    'phrase': 'напиши',
     'paramType': {
-        'text': 'str'
-     },
-    'returnType': { },
-    'code': """
-import pyautogui
-
-def write_phrase(data):
-    print("Write")
-
-    for letter in data['text']:
-        pyautogui.press(letter)
-    del data['text']
-    return data
-
-write_phrase(data)"""
+        'text': 'String'
+    }
 }
 
 commands['detect_shapes'] = {
     'name': 'detect_shapes',
-    'phrase': ['найди объекты', 'найди прямоугольники', 'найди линии'],
+    'phrase': 'найди объекты',
     'paramType': {
-        'color': 'str',
-        'shape': 'Enum(line, rectangle, all)',
+        'color': 'String',
+        'shape': 'enum[линия, прямоугольник, все',
         'width_low': 'int',
         'width_up': 'int',
         'height_low': 'int',
         'height_up': 'int',
-     },
+    },
     'returnType': {
-        'shapes': 'Array((int, int))',
+        'shapes': 'int[][2',
         'img': 'path'
-     }
+    }
 }
 
 commands['detect_text'] = {
     'name': 'detect_text',
-    'phrase': ['найди фразу', 'найди текст'],
+    'phrase': 'найди текст',
     'paramType': {
-        'phrase': 'str'
-     },
+        'phrase': 'String'
+    },
     'returnType': {
-        'shapes': 'Array((int, int))',
+        'shapes': 'int[][2',
         'img': 'path'
-     }
+    }
 }
 
 commands['show_shapes'] = {
     'name': 'show_shapes',
-    'phrase': ['покажи найденное'],
-    'paramType': {
-        'img': 'path',
-     },
-    'returnType': { }
+    'phrase': 'покажи найденное',
+    'historyArgs': {
+        'img': 'path'
+    },
+    'returnType': {
+        'img_pid': 'int'
+    }
 }
 
 commands['choose_shape'] = {
     'name': 'choose_shape',
-    'phrase': ['выбираю объект', 'выбираю форму', 'выбираю'],
+    'phrase': 'выбираю объект',
     'paramType': {
         'shape_num': 'int',
-        'shapes': 'Array((int, int))',
+    },
+    'historyArgs': {
+        'shapes': 'int[][2',
         'img_pid': 'int'
     },
     'returnType': {
-        'xy': '(int, int)',
-        'shapes': 'Array((int, int))'
+        'xy': 'int[2'
     }
 }
 
 
 if __name__ == '__main__':
-    host = '127.0.0.1'
-    port = 27017
-    db_name = 'ajarvis'
-    collection_name = 'command'
+    host = mongo_config.host
+    port = mongo_config.port
+    db_name = mongo_config.database
+    collection_name = mongo_config.collection
 
     mongo = MongoClient(f'mongodb://{host}:{port}/')
     db = mongo[db_name]
     collection = db[collection_name]
+
+    conn = True
     for key, command in commands.items():
         try:
             file_name = key + ".py"
@@ -167,7 +146,14 @@ if __name__ == '__main__':
         except FileNotFoundError:
             pass
         command['_id'] = str(uuid.uuid4())
-        collection.insert_one(command)
+        try:
+            if conn and not collection.count_documents({"name": command['name']}):
+                collection.insert_one(command)
+        except ServerSelectionTimeoutError:
+            conn = False
 
     with open('commands.json', 'w', encoding='utf-8') as outfile:
         json.dump(commands, outfile, ensure_ascii=False)
+
+    if not conn:
+        print("Проверьте работу MongoDB. Соединение не было установлено.")
