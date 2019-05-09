@@ -12,7 +12,7 @@
 Для заполнения базы данных командами нужно выполнить запросы из файла [commands.http](https://github.com/SharkSashkaBestDev/ajarvis/blob/feature/Aj-33/actions/src/main/java/com/asoft/ajarvis/actions/enities/commands.http)  <br>
 
 
-Запуск сервера осуществляется из класа `AjarvisApplication`
+Запуск сервера осуществляется из класа [AjarvisApplication](https://github.com/SharkSashkaBestDev/ajarvis/blob/feature/Aj-33/actions/src/main/java/com/asoft/ajarvis/actions/AjarvisApplication.java)
 
 Выполнение команд происходит через запросы на адреса 
  * для фильтрации строки и выделение фразы конкретной команды для выполнения нужно отправить 
