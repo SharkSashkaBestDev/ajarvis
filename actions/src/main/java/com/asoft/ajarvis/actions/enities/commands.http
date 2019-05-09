@@ -33,6 +33,7 @@ Content-Type: application/json
 {
   "name": "AddCommand",
   "phrase": "addCommand",
+  "language": "JAVA",
   "code": "List<String> includedcmd=null;if(arg.get('includedCommand')!=null){includedcmd=arg.get('includedCommand')}; String code=null;if(arg.get('code')!=null){code=arg.get('code')};String imports=null;if(arg.get('imports')!=null){imports=arg.get('imports')};context.getBean('commandService').createCommand(arg.get('phraseCmd'),imports,code,includedcmd);return arg;"
 }
 
@@ -44,6 +45,7 @@ Content-Type: application/json
 {
   "name": "delCommand",
   "phrase": "delCommand",
+  "language": "JAVA",
   "code": "context.getBean('commandService').delete(arg.get('phraseCmd'));return arg; "
 }
 
