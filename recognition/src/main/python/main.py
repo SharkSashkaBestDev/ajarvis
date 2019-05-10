@@ -7,11 +7,13 @@ import requests
 LANG_RU = "ru-RU"
 PHRASE = "phrase"
 INT = "int"
+COMAND = "comand"
 STRING = "String"
 BASE_URL = "http://127.0.0.1:8091/ajarvis/commands/"
 
 
 def args_check(args_type, raw_arg):
+    url = BASE_URL + "filter"
     if args_type == INT:
         while True:
             try:
@@ -32,6 +34,16 @@ def args_check(args_type, raw_arg):
                 # break
             else:
                 print("Повторите попытку ввода")
+                raw_arg = recognize_exception(True)
+    elif args_type == COMAND:
+        while True:
+            com = requests.post(url, json={PHRASE: raw_arg})
+            try:
+                arg = com.json().pop(PHRASE)
+                print(arg)
+                return arg
+            except:
+                print("Команда не распознана или такой команды не существует, повторите")
                 raw_arg = recognize_exception(True)
 
 
