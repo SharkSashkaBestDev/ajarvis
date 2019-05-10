@@ -30,8 +30,6 @@ def args_check(args_type, raw_arg):
             if arg != "":
                 print(arg)
                 return arg
-                # dict_of_new_phrases.update({key: arg})
-                # break
             else:
                 print("Повторите попытку ввода")
                 raw_arg = recognize_exception(True)
@@ -120,13 +118,9 @@ def recognize():
                 print(resoult)
                 var = requests.post(url, json={PHRASE: resoult})
                 send_args = var.json()
-                # print(send_args)
                 new_args = set_args(send_args)
                 print(new_args)
-                var_redy = requests.post(url_param, json=new_args)
-                #get_args = var_redy.json()
-                # print(get_args)
-
+                requests.post(url_param, json=new_args)
         except Exception as _:
             print("Аргументы не приняты")
         finally:
