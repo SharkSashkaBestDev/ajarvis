@@ -124,12 +124,15 @@ def detect_shapes(data):
     def get_mask(img):
         img = cv2.GaussianBlur(img, (3, 3), sigmaX=4, sigmaY=4)
         if 'color' in data:
-            hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-            mask = np.zeros(hsv.shape[:-1], dtype=hsv.dtype)
-            for low_c, up_c in colors[data['color']]:
-                mask1 = cv2.inRange(hsv, low_c, up_c)
-                mask = cv2.bitwise_or(mask, mask1)
-            data.pop('color', None)
+            if data['color'] in colors:
+                hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+                mask = np.zeros(hsv.shape[:-1], dtype=hsv.dtype)
+                for low_c, up_c in colors[data['color']]:
+                    mask1 = cv2.inRange(hsv, low_c, up_c)
+                    mask = cv2.bitwise_or(mask, mask1)
+                del data['color']
+            else:
+                return None
         else:
             gr = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             _, mask = cv2.threshold(gr, 220, 255, cv2.THRESH_BINARY)
@@ -211,28 +214,28 @@ def detect_shapes(data):
         return centers
 
     try:
-        err = ""
         img = pyautogui.screenshot()
         img = np.array(img)
         img = img[:, :, ::-1] # conversion from RGB to BGR
         imgToShow = img.copy()
         
         mask = get_mask(img)
-        shapes = get_shapes(mask)
-        if len(shapes):
-            shapes = draw_shapes(shapes, imgToShow)
-            file_name = 'detected_objects.png'
-            cv2.imwrite(file_name, imgToShow)
-            data['img'] = file_name
-            data['shapes'] = shapes
+        if mask is None:
+            data['error'] = "Такого цвета нет"
         else:
-            err = 'Ничего не нашел'
-    except KeyError:
-        err = "Такого цвета нет"
+            shapes = get_shapes(mask)
+            if shapes:
+                shapes = draw_shapes(shapes, imgToShow)
+                file_name = 'detected_objects.png'
+                cv2.imwrite(file_name, imgToShow)
+                data['img'] = file_name
+                data['shapes'] = shapes
+            else:
+                data['error'] = 'Ничего не нашел'
+    except KeyError as e:
+        data['error'] = f"Требуется аргумент '{e.args[0]}'"
     except Exception as e:
-        err = str(e)
-    if err:
-        data['error'] = err
+        data['error'] = str(e)
     return data
 
 detect_shapes(data)

@@ -13,7 +13,10 @@ commands['make_click'] = {
     'name': 'click',
     'phrase': "сделай клик",
     'paramType': {
-        'xy': 'int[2'
+        'xy': 'int[2',
+        'russian': {
+            'xy': "координаты"
+        }
     },
     'returnType': {
         'xy': 'int[2'
@@ -24,7 +27,10 @@ commands['make_double_click'] = {
     'name': 'double_click',
     'phrase': "сделай двойной клик",
     'paramType': {
-        'xy': 'int[2'
+        'xy': 'int[2',
+        'russian': {
+            'xy': "координаты"
+        }
     },
     'returnType': {
         'xy': 'int[2'
@@ -41,6 +47,9 @@ commands['detect_image'] = {
     'phrase': 'найди изображение',
     'paramType': {
         'file': 'path',
+        'russian': {
+            'file': "путь к изображению"
+        }
     },
     'returnType': {
         'xy': 'int[2'
@@ -52,6 +61,9 @@ commands['mouse_move'] = {
     'phrase': 'перемести мышку',
     'paramType': {
         'xy': 'int[2',
+        'russian': {
+            'xy': "координаты"
+        }
     },
     'returnType': {
         'xy': 'int[2'
@@ -67,7 +79,10 @@ commands['write_phrase'] = {
     'name': 'write_phrase',
     'phrase': 'напиши',
     'paramType': {
-        'text': 'String'
+        'text': 'String',
+        'russian': {
+            'text': "текст"
+        }
     }
 }
 
@@ -76,11 +91,19 @@ commands['detect_shapes'] = {
     'phrase': 'найди объекты',
     'paramType': {
         'color': 'String',
-        'shape': 'enum[линия, прямоугольник, все',
+        'shape': 'enum[линия, прямоугольник, всё',
         'width_low': 'int',
         'width_up': 'int',
         'height_low': 'int',
         'height_up': 'int',
+        'russian': {
+            'color': 'цвет',
+            'shape': 'форма',
+            'width_low': 'минимальная ширина',
+            'width_up': 'максимальная ширина',
+            'height_low': 'минимальная высота',
+            'height_up': 'максимальная высота',
+        }
     },
     'returnType': {
         'shapes': 'int[][2',
@@ -92,7 +115,10 @@ commands['detect_text'] = {
     'name': 'detect_text',
     'phrase': 'найди текст',
     'paramType': {
-        'phrase': 'String'
+        'text': 'String',
+        'russian': {
+            'text': "текст"
+        }
     },
     'returnType': {
         'shapes': 'int[][2',
@@ -116,6 +142,9 @@ commands['choose_shape'] = {
     'phrase': 'выбираю объект',
     'paramType': {
         'shape_num': 'int',
+        'russian': {
+            'shape_num': "номер объекта"
+        }
     },
     'historyArgs': {
         'shapes': 'int[][2',

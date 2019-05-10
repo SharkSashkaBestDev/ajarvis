@@ -31,7 +31,7 @@ opencv_python >= 4.1.0.25
 psutil >= 5.6.1
 
 # commands_to_json.py: 4,5
-# server.py: 2
+# server.py: 2,3
 pymongo >= 3.7.2
 
 # write_phrase.py: 4

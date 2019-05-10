@@ -14,6 +14,12 @@ def choose_shape(data):
             p = psutil.Process(pid)
             p.kill()
             del data['img_pid']
+    except ValueError:
+        data['error'] = "Аргумент 'shape_num' должен быть целым положительным числом"
+    except KeyError as e:
+        data['error'] = f"Требуется аргумент '{e.args[0]}'"
+    except IndexError:
+        data['error'] = f"Объекта с индексом {num} не существует"
     except Exception as e:
         data['error'] = str(e)
     return data

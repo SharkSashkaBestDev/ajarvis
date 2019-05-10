@@ -9,10 +9,12 @@ def double_click(data):
             x, y = pyautogui.position()
             data['xy'] = x, y
         if pyautogui.onScreen(x, y):
-            print("Выполняю двойной клик мышкой в", x, y)
+            print("Double click", x, y)
             pyautogui.doubleClick(x, y)
         else:
-            data['error'] = "Эти координаты находятся вне вашего экрана", *pyautogui.size()
+            size = pyautogui.size()
+            data['error'] = f"Эти координаты ({x}; {y}) " \
+                f"находятся вне вашего экрана ({size.width}; {size.height})"
     except Exception as e:
         data['error'] = str(e)
     return data

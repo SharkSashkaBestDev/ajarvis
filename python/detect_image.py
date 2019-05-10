@@ -12,10 +12,12 @@ def detect_image(data):
     except ImageNotFoundException:
         data['error'] = "Не нашел такое изображение на экране"
     except OSError:
-        data['error'] = f"Не нашел вашу картинку {file}"
+        data['error'] = "Не нашел ваше изображение в файловой системе. " \
+                        "Проверьте название файла."
+    except KeyError as e:
+        data['error'] = f"Требуется аргумент '{e.args[0]}'"
     except Exception as e:
         data['error'] = str(e)
-    del data['file']
     return data
 
 detect_image(data)
