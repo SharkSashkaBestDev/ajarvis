@@ -34,6 +34,7 @@ public class Executor {
     private static final String MAP = "Map";
     private static final String CONTEXT = "context";
     private static final String LOG = "log";
+    private static final String ERROR = "Error";
 
     @Autowired
     private CommandRepository cmdRepo;
@@ -122,6 +123,7 @@ public class Executor {
             return excuteCmd(cmd, args);
         } catch (Exception e) {
             logger.error(String.format("Execution failure in %s command with error message: %s", cmd.getId(), e.getMessage()));
+            args.put(ERROR,e.getMessage());
             return e;
         } finally {
             historyRepo.save(new HistoryRecord(cmd.getId(), args));
