@@ -15,5 +15,6 @@ public interface CommandRepository extends MongoRepository<Command, String> {
     Iterable<Command> findAllByUsedCommandsIdsContaining(String id);
     Iterable<Command> findAllByIdIn(List<String> ids);
     Optional<Command> findByUsedCommandsIds(List<String> s);
+    Iterable<Command> findAllByPhraseIn(List<String> Phrase);
     Optional<Command> findByPhrase(String str);
 }
