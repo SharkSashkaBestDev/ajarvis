@@ -105,7 +105,7 @@ public class Executor {
         return code;
     }
 
-    public Object excuteCmd(final Command cmd, Map<String, Object> args) {
+    public Object excuteCmd(final Command cmd, Map<String, Object> args) throws Exception {
         GroovyShell shell = new GroovyShell();
         shell.setVariable(ARG, args);
         shell.setVariable(CONTEXT, AjarvisApplication.getContext());
@@ -119,14 +119,16 @@ public class Executor {
     }
 
     public Object execute(final Command cmd, Map<String, Object> args) {
+        Map result=new  HashMap<String,Object>();
         try {
-            return excuteCmd(cmd, args);
+            result.putAll((Map)excuteCmd(cmd, args));
+            return result;
         } catch (Exception e) {
             logger.error(String.format("Execution failure in %s command with error message: %s", cmd.getId(), e.getMessage()));
-            args.put(ERROR,e.getMessage());
+            result.put(ERROR,e.getMessage());
             return e;
         } finally {
-            historyRepo.save(new HistoryRecord(cmd.getId(), args));
+            historyRepo.save(new HistoryRecord(cmd.getId(), args,result));
             logger.info("History was updated: new record was added");
         }
     }

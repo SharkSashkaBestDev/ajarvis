@@ -20,25 +20,110 @@ Content-Type: application/json
 {
   "name": "chain",
   "phrase": "conect",
+  "paramType": {
+    "ids": "comand[1"
+  },
+  "returnType": {
+    "ids": "comand[1"
+  },
   "code": "return context.getBean('request').sendRequest(arg.get('ids'), arg);",
   "language": "JAVA"
 }
 
 ###
 
+## Part for creation
+POST http://localhost:8091/ajarvis/commands
+Content-Type: application/json
+
+{
+  "id": "a3ace55d-7684-4ebf-a171-7f80e276c4f7",
+  "name": "CreateChainCommand",
+  "phrase": "Create Command",
+  "code": "List<String> includedcmd=null;if(arg.get('includedCommand')!=null){includedcmd=arg.get('includedCommand')}; String code=null;if(arg.get('code')!=null){code=arg.get('code')};String imports=null;if(arg.get('imports')!=null){imports=arg.get('imports')};context.getBean('commandService').createCommand(arg.get('phraseCmd'),imports,code,includedcmd);return arg;",
+  "paramType": {
+    "includedCommand": "comand[1",
+    "phraseCmd": "String"
+  },
+  "returnType": {
+    "includedCommand": "comand[1",
+    "phraseCmd": "String"
+  },
+  "language": "JAVA",
+  "whereUsed": [
+    "ce144c35-2b23-474e-9300-7773d37205ba"
+  ]
+}
+
+###
 ## POST for creation
 POST http://localhost:8091/ajarvis/commands
 Content-Type: application/json
 
 {
-  "name": "AddCommand",
-  "phrase": "addCommand",
+  "id": "05172cb0-d567-4c9a-b0cb-52dbe565c216",
+  "name": "CheckChain",
+  "phrase": "Chain Check",
+  "code": "List<String> includedcmd=null;if(arg.get('includedCommand')!=null){includedcmd=arg.get('includedCommand')};arg.put('includedCommand',context.getBean('commandService').validationCheck(includedcmd));return arg;",
+  "paramType": {
+    "includedCommand": "comand[1"
+  },
+  "returnType": {
+    "includedCommand": "comand[1"
+  },
   "language": "JAVA",
-  "code": "List<String> includedcmd=null;if(arg.get('includedCommand')!=null){includedcmd=arg.get('includedCommand')}; String code=null;if(arg.get('code')!=null){code=arg.get('code')};String imports=null;if(arg.get('imports')!=null){imports=arg.get('imports')};context.getBean('commandService').createCommand(arg.get('phraseCmd'),imports,code,includedcmd);return arg;"
+  "whereUsed": [
+    "ce144c35-2b23-474e-9300-7773d37205ba"
+  ]
 }
 
 ###
+## POST for creation
+POST http://localhost:8091/ajarvis/commands
+Content-Type: application/json
 
+{
+  "id": "cdd90cff-51ce-4643-bfc8-242585764617",
+  "name": "IdFromPhrase",
+  "phrase": "IdfromPhrase",
+  "code": "List<String> includedcmd=null;if(arg.get('includedCommand')!=null){includedcmd=arg.get('includedCommand')};arg.put('includedCommand',context.getBean('commandService').getIdFromPhrase(includedcmd));return arg;",
+  "paramType": {
+    "includedCommand": "comand[1"
+  },
+  "returnType": {
+    "includedCommand": "comand[1"
+  },
+  "language": "JAVA",
+  "whereUsed": [
+    "ce144c35-2b23-474e-9300-7773d37205ba"
+  ]
+}
+
+###
+POST http://localhost:8091/ajarvis/commands
+Content-Type: application/json
+
+{
+  "id": "ce144c35-2b23-474e-9300-7773d37205ba",
+  "name": "createNewCommand",
+  "phrase": "CreateCommand",
+  "paramType": {
+    "includedCommand": "comand[1",
+    "phraseCmd": "String"
+  },
+  "returnType": {
+    "includedCommand": "comand[1",
+    "phraseCmd": "String"
+  },
+  "usedCommandsIds": [
+    "cdd90cff-51ce-4643-bfc8-242585764617",
+    "05172cb0-d567-4c9a-b0cb-52dbe565c216",
+    "a3ace55d-7684-4ebf-a171-7f80e276c4f7"
+  ]
+}
+
+###
+###
 POST http://localhost:8091/ajarvis/commands
 Content-Type: application/json
 
@@ -46,6 +131,12 @@ Content-Type: application/json
   "name": "delCommand",
   "phrase": "delCommand",
   "language": "JAVA",
+  "paramType": {
+    "phraseCmd": "String"
+  },
+  "returnType": {
+    "phraseCmd": "String"
+  },
   "code": "context.getBean('commandService').delete(arg.get('phraseCmd'));return arg; "
 }
 

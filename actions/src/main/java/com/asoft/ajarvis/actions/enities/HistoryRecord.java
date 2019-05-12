@@ -14,6 +14,7 @@ public class HistoryRecord {
     private String command;
     private Date time;
     private Map<String, Object> arg;
+    private Map<String, Object> result;
 
     public HistoryRecord() {
         this.id = UUID.randomUUID().toString();
@@ -25,9 +26,10 @@ public class HistoryRecord {
         this.command = command;
     }
 
-    public HistoryRecord(String command, Map<String, Object> arg) {
+    public HistoryRecord(String command, Map<String, Object> arg,Map<String, Object> result) {
         this();
         this.command = command;
         this.arg = arg;
+        this.result = result;
     }
 }
