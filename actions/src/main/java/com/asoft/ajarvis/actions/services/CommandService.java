@@ -115,7 +115,7 @@ public class CommandService {
             args.putAll(firstParamType);
             args.putAll(firstReturnType);
 
-            if (!args.entrySet().contains(secondParamType.entrySet())) {
+            if (!args.entrySet().containsAll(secondParamType.entrySet())) {
                 throw new Exception(String.format("command '%s' cannot be used in chain ",  secondCommand.getPhrase()));
             }
 
