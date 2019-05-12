@@ -61,7 +61,7 @@ public class HistoryService {
     }
 
 
-    public void executeHistoryRecord(HistoryRecord rec)  {
+    public void executeHistoryRecord(HistoryRecord rec) throws Exception  {
 
         if (rec.getCommand() != null && !rec.getCommand().isEmpty()) {
             Optional<Command> commandOptional = commandRepository.findById(rec.getCommand());
