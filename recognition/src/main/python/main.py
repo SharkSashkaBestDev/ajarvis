@@ -4,15 +4,21 @@ from threading import Thread
 from queue import Queue
 import requests
 
+import os
+import webbrowser
+
 LANG_RU = "ru-RU"
 PHRASE = "phrase"
 INT = "int"
+ENUM = "enum"
+PATH = "path"
 COMAND = "comand"
+RUSSIAN = "russian"
 STRING = "String"
 BASE_URL = "http://127.0.0.1:8091/ajarvis/commands/"
 
 
-def args_check(args_type, raw_arg):
+def args_check(args_type, raw_arg, enum_filtr):
     url = BASE_URL + "filter"
     if args_type == INT:
         while True:
@@ -43,6 +49,71 @@ def args_check(args_type, raw_arg):
             except:
                 print("Команда не распознана или такой команды не существует, повторите")
                 raw_arg = recognize_exception(True)
+    elif args_type == ENUM:
+        while True:
+            print("Скажите словл из списка " + enum_filtr)
+            arg = recognize_exception(True)
+            list = enum_filtr.split(", ")
+            if arg in list:
+                print(arg)
+                return arg
+            else:
+                print("Вы ввели слово не из списка")
+    elif args_type == PATH:
+        # webbrowser.open("http://127.0.0.1:5000/")
+        arg = ""
+        path = []
+        error_args = False
+        while "стоп" not in arg.split(" "):
+            stre = '\\' + '\\'.join(path)
+            if os.path.isfile(stre):
+                break
+            list = os.listdir(stre)
+            [x.lower() for x in list].sort()
+
+            for i in range(len(list) - 1, -1, -1):
+                try:
+                    if len(path) == 0:
+                        if not os.path.isfile(stre + list[i]):
+                            os.listdir(stre + list[i])
+                    else:
+                        if not os.path.isfile(stre + "\\" + list[i]):
+                            os.listdir(stre + "\\" + list[i])
+                except:
+                    del list[i]
+            html = '<!DOCTYPE html><html> <head><meta charset = "UTF-8"><title> путь </title></head><body><h1>Скажите номер папки или файла</h1><table>'
+            for i in range(len(list)):
+                html += '<tr><td>' + str(i+1) + '</ td><td>' + str(list[i]) + '</td></tr>'
+
+            if error_args:
+                html += '<h2>неправильный аргумент</h2></table></body></html>'
+            else:
+                html += '</table></body></html>'
+            with open("path.html", 'w') as f:
+                f.write(html)
+                f.close()
+
+            webbrowser.open("path.html")
+            # webbrowser.refresh()
+            # redirect(url_for('apiget', list=list, err = False))
+            arg = recognize_exception(True)
+            try:
+                numb = int(arg) - 1
+                path.append(list[numb])
+            except:
+                if arg != "стоп":
+                    pass
+                    # redirect(url_for('apiget', list=list, err=True))
+        return stre
+
+
+def array_russian_text(lim, j, russian_array):
+    if lim == 1:
+        print("Введите аргумент " + russian_array[0])
+    elif j < lim:
+        print("Введите аргумент " + russian_array[j])
+    arg = recognize_exception(True)
+    return arg
 
 
 def set_args(args_description):
@@ -51,28 +122,42 @@ def set_args(args_description):
 
     if args_description[PHRASE] is not None:
         dict_of_new_phrases = {PHRASE: args_description.pop(PHRASE)}
+        rusian = args_description.pop(RUSSIAN)
 
         for i in args_description:
-            print("Введите аргумент " + i)
+
             args_flag = False
             args_struct = args_description[i].split("[")
             arg_type = len(args_struct)
-            arg = recognize_exception(True)
+
             if arg_type == 1:
-                true_arg = args_check(args_struct[0], arg)
+                print("Введите аргумент " + rusian[i])
+                if args_struct[0] == PATH:
+                    true_arg = args_check(args_struct[0], None, None)
+                else:
+                    arg = recognize_exception(True)
+                    true_arg = args_check(args_struct[0], arg, None)
                 dict_of_new_phrases.update({i: true_arg})
             else:
-                array_for_arguments = []
-                j = 0
-                while "стоп" not in arg.split(" ") or j < int(args_struct[1]):
-                    true_arg = args_check(args_struct[0], arg)
-                    array_for_arguments.append(true_arg)
-                    j += 1
-                    if j >= int(args_struct[1]):
-                        print("вы ввели достаточно аргументов скажите 'стоп' для остановки")
-                    arg = recognize_exception(True)
+                try:
+                    russian_array = rusian[i].split(" ")
+                    lim = int(args_struct[1])
+                    array_for_arguments = []
+                    j = 0
+                    arg = array_russian_text(lim, j, russian_array)
+                    while "стоп" not in arg.split(" ") or j < lim:
+                        true_arg = args_check(args_struct[0], arg, None)
+                        array_for_arguments.append(true_arg)
+                        j += 1
+                        if j >= int(args_struct[1]):
+                            print("вы ввели достаточно аргументов скажите 'стоп' для остановки")
+                        arg = array_russian_text(lim, j, russian_array)
+                    dict_of_new_phrases.update({i: array_for_arguments})
+                except:
+                    print("Введите аргумент " + rusian[i])
+                    true_arg = args_check(args_struct[0], None, args_struct[1])
+                    dict_of_new_phrases.update({i: true_arg})
 
-                dict_of_new_phrases.update({i: array_for_arguments})
     print("Аргументы успешно введены")
     args_flag = True
     return dict_of_new_phrases
