@@ -2,7 +2,6 @@ import pyautogui
 
 
 def mouse_move(data):
-    print("Mouse move")
     if 'xy' in data:
         x, y = data['xy']
         if pyautogui.onScreen(x, y):

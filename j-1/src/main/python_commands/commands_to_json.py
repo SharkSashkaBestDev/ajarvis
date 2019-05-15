@@ -14,22 +14,10 @@ commands['make_click'] = {
     'phrase': "сделай клик",
     'paramType': {
         'xy': 'int[2',
+        'type': 'enum[двойной, одинарный',
         'russian': {
-            'xy': "координаты"
-        }
-    },
-    'returnType': {
-        'xy': 'int[2'
-    }
-}
-
-commands['make_double_click'] = {
-    'name': 'double_click',
-    'phrase': "сделай двойной клик",
-    'paramType': {
-        'xy': 'int[2',
-        'russian': {
-            'xy': "координаты"
+            'xy': "координаты",
+            'type': "тип клика"
         }
     },
     'returnType': {
@@ -49,6 +37,36 @@ commands['detect_image'] = {
         'file': 'path',
         'russian': {
             'file': "путь к изображению"
+        }
+    },
+    'returnType': {
+        'xy': 'int[2'
+    }
+}
+
+commands['mouse_shift'] = {
+    'name': 'mouse_shift',
+    'phrase': 'сдвинь мышку',
+    'paramType': {
+        'direction': 'enum[выше, ниже, левее, правее',
+        'russian': {
+            'direction': "направление"
+        }
+    },
+    'returnType': {
+        'xy': 'int[2'
+    }
+}
+
+commands['mouse_move_corner'] = {
+    'name': 'mouse_move_corner',
+    'phrase': 'перемести мышку в угол',
+    'paramType': {
+        'horizontal': 'enum[правый, левый',
+        'vertical': 'enum[верхний, нижний',
+        'russian': {
+            'horizontal': 'угол по горизонтали',
+            'vertical': 'угол по вертикали',
         }
     },
     'returnType': {
@@ -116,8 +134,10 @@ commands['detect_text'] = {
     'phrase': 'найди текст',
     'paramType': {
         'text': 'String',
+        'lang': 'enum[русский, английский',
         'russian': {
-            'text': "текст"
+            'text': "текст",
+            'lang': "язык"
         }
     },
     'returnType': {
@@ -172,6 +192,7 @@ if __name__ == '__main__':
             file_name = key + ".py"
             with open(file_name, 'r', encoding='utf-8') as file:
                 command['code'] = file.read()
+                command['language'] = "PYTHON"
         except FileNotFoundError:
             pass
         command['_id'] = str(uuid.uuid4())

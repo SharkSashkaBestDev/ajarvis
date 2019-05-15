@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 
 
 def show_shapes(data):
-    print("Show shapes")
     if 'img' in data:
         if cv2.imread(data['img']) is None:
             data['error'] = "Такого изображения с найденными объектами не существует. " \

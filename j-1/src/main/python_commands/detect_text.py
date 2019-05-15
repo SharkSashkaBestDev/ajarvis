@@ -13,7 +13,10 @@ def detect_text(data):
     try:
         SCREEN_X, SCREEN_Y = pyautogui.size()
         img = pyautogui.screenshot()
-        found = pytesseract.image_to_boxes(img, lang='rus', output_type=pytesseract.Output.DICT)
+        lang = 'eng'
+        if data['lang'] == 'русский':
+            lang = 'rus'
+        found = pytesseract.image_to_boxes(img, lang=lang, output_type=pytesseract.Output.DICT)
 
         phrase = data['text']
         del data['text']
@@ -57,7 +60,7 @@ def detect_text(data):
 
         result = []
 
-        def f(words, mss, n):
+        def find_phrases(words, mss, n):
             if not words: 
                 return None
             for j in range(len(words), n_min, -1):
@@ -71,11 +74,11 @@ def detect_text(data):
                         mss.pop()
                         n -= len(ws)
                         continue
-                    f(words[j:], mss, n)
+                    find_phrases(words[j:], mss, n)
                     mss.pop()
                 n -= len(ws)
 
-        f(words, [], 0)
+        find_phrases(words, [], 0)
 
         rects = []
         for res in result:
@@ -95,8 +98,6 @@ def detect_text(data):
                     r_pre = m.r
                 else:
                     rects.append(((left_min, SCREEN_Y-top_max), (right_max, SCREEN_Y-bottom_min)))
-
-        print("Найдено", len(rects))
 
         if rects:
             centers = []
