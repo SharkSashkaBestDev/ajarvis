@@ -44,7 +44,7 @@ public class Executor {
     private static HashMap<Language, String> servers = new HashMap<>();
 
     static {
-        servers.put(Language.PYTHON, "http://10.241.129.11:5000/execute");
+        servers.put(Language.PYTHON, "http://localhost:5000/execute");
     }
 
     public StringBuilder createCode(StringBuilder code, Command cmd) {

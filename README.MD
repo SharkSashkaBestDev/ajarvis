@@ -1,3 +1,48 @@
+Для запуска проекта необходимо:
+1. Запустить AjarvisApplication.java
+2. В cmd прописать: cd actions/src/main/python_server
+export FLASK_APP=server.py
+export FLASK_ENV=development 
+flask run 
+3. В новой cmd прописать: python3 recognition/src/main/python/main.py
+4. Команда для теста: "Открой браузер"
+
+# AJarvis Project
+## Java part
+Для работы требуется установка :
+
+MongoDb
+Для конфигурации нужно заполнить в файле application.properties такие поля : 
+
+server.portпорт приложения по умолчанию стоит 8091
+spring.data.mongodb.host адресс приложения по умолчанию стоит 127.0.0.1
+spring.data.mongodb.database название базы для приложения
+Для заполнения базы данных командами нужно выполнить запросы из файла commands.http 
+
+Запуск сервера осуществляется из класа AjarvisApplication
+
+Выполнение команд происходит через запросы на адреса
+
+для фильтрации строки и выделение фразы конкретной команды для выполнения нужно отправить POST запрос на адресс localhost:8091/ajarvis/commands/filter с телом запроза подобным на 
+{ "phrase":"sds as тип тест go вы Work аргументы путь 10 11.5 " }
+
+фраза для фильтрации :
+"phrase"
+для получения всех команд нужно отправить GET запрос на адресс localhost:8091/ajarvis/commands
+
+для выполнения команды нужно отправить POST запрос на адресс localhost:8091/ajarvis/commands/execute с телом запроза подобным на (обьяснения после тела ) 
+{ "begin": 0, "phrase": "exec histry", "end": 0 }
+
+фраза команды:
+"phrase"
+аргументы:
+"begin"
+"end"
+...
+также есть запросы для разработчиков :
+
+что бы понять как будет выглядеть код определенной команды нужно отправить GET запрос на адресс localhost:8091/ajarvis/commands/giveCode/{id} на месте {id} нужно вставить идентификатор конкретной команды
+
 # AJarvis Project
 ## Python part
 
