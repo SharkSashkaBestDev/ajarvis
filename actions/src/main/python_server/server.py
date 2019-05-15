@@ -16,6 +16,7 @@ mongo = MongoClient(f'mongodb://{host}:{port}/')
 db = mongo[db_name]
 collection = db[collection_name]
 
+EXCEPTION = "Ошибка в {}, сообщение: {}"
 data = {}
 
 
@@ -26,7 +27,7 @@ def temp(data):
 def exec_command():
     global data
     status_code = 200
-    data.pop('errors', None)
+    data.pop('error', None)
     try:
         json = request.get_json()
         data.update(json['kwargs'])
@@ -36,32 +37,26 @@ def exec_command():
             if command:
                 exec(command['code'], {'data': data, 'temp': temp})
             else:
-                data['errors'] = {
-                    'general': "Не знаю команды с id = " + id
-                }
+                data['error'] = EXCEPTION.format(
+                    "Python-сервер", 
+                    "не знаю команды с id = " + id)
                 status_code = 404
                 break
             if 'error' in data:
-                data['errors'] = {
-                    id: data['error'] 
-                }
+                data['error'] = EXCEPTION.format(id, data['error'])
                 del data['error']
                 status_code = 400
                 break
     except ServerSelectionTimeoutError:
-        data['errors'] = {
-            "mongoDB": "Проверьте работу MongoDB. Соединение не было установлено."
-        }
+        data['error'] = EXCEPTION.format(
+            "Python-сервер", 
+            "проверьте работу MongoDB, соединение не было установлено.")
         status_code = 500     
     except KeyError as e:
-        data['errors'] = {
-            "general": f"Требуется аргумент '{e.args[0]}'"
-        }
+        data['error'] = EXCEPTION.format("Python-сервер", f"требуется аргумент '{e.args[0]}'")
         status_code = 400
     except Exception as ex:
-        data['errors'] = {
-            'general': str(ex)
-        }
+        data['error'] = EXCEPTION.format("Python-сервер", str(ex))
         status_code = 500
     return jsonify(data), status_code
 

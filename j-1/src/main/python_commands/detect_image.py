@@ -3,7 +3,6 @@ from pyscreeze import ImageNotFoundException
 
 
 def detect_image(data):
-    print("Detect image")
     try:
         file = data['file']
         x, y = pyautogui.locateCenterOnScreen(file, confidence=0.9)

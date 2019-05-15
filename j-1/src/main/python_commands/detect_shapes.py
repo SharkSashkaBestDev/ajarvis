@@ -143,7 +143,7 @@ def detect_shapes(data):
     def get_shapes(mask):
         screen_size = pyautogui.size()
         shapes = []
-        min_area = 50
+        min_area = 30
         max_area = np.prod(screen_size) / 2
         min_line_area = 30
         thickness = 5
@@ -189,7 +189,6 @@ def detect_shapes(data):
                     or (not is_line and check_rect_size):
                 shapes.append(rect)
         shapes = sorted(shapes, key=lambda x: x[0][::-1])
-        print("Найдено", len(shapes), "объект[а/ов]")
 
         data.pop('shape', None)
         data.pop('width_low', None)

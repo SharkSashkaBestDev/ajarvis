@@ -1,13 +1,11 @@
-# server.py: 1
-Flask >= 1.0.2
-
 # choose_shape.py: 2
 # detect_image.py: 1
 # detect_shapes.py: 3
 # detect_text.py: 7
 # make_click.py: 1
-# make_double_click.py: 1
 # mouse_move.py: 1
+# mouse_move_corner.py: 1
+# mouse_shift.py: 1
 # press_enter.py: 1
 # write_phrase.py: 3
 PyAutoGUI >= 0.9.41
@@ -31,7 +29,6 @@ opencv_python >= 4.1.0.25
 psutil >= 5.6.1
 
 # commands_to_json.py: 4,5
-# server.py: 2,3
 pymongo >= 3.7.2
 
 # write_phrase.py: 4

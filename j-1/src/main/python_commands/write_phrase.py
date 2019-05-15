@@ -5,7 +5,6 @@ import pyperclip
 
 
 def write_phrase(data):
-    print("Write text")
     if 'text' in data:
         pyperclip.copy(data['text'])
         command = "command" if platform.system() == "Darwin" else "ctrl"

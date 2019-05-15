@@ -3,7 +3,6 @@ import pyautogui
 
 
 def choose_shape(data):
-    print("Choose shape")
     try:
         num = int(data['shape_num'])
         data['xy'] = data['shapes'][num]     
