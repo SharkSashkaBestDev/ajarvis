@@ -122,41 +122,42 @@ def set_args(args_description):
 
     if args_description[PHRASE] is not None:
         dict_of_new_phrases = {PHRASE: args_description.pop(PHRASE)}
-        rusian = args_description.pop(RUSSIAN)
+        rusian = args_description.pop(RUSSIAN, None)
 
-        for i in args_description:
+        if args_description:
+            for i in args_description:
 
-            args_flag = False
-            args_struct = args_description[i].split("[")
-            arg_type = len(args_struct)
+                args_flag = False
+                args_struct = args_description[i].split("[")
+                arg_type = len(args_struct)
 
-            if arg_type == 1:
-                print("Введите аргумент " + rusian[i])
-                if args_struct[0] == PATH:
-                    true_arg = args_check(args_struct[0], None, None)
-                else:
-                    arg = recognize_exception(True)
-                    true_arg = args_check(args_struct[0], arg, None)
-                dict_of_new_phrases.update({i: true_arg})
-            else:
-                try:
-                    russian_array = rusian[i].split(" ")
-                    lim = int(args_struct[1])
-                    array_for_arguments = []
-                    j = 0
-                    arg = array_russian_text(lim, j, russian_array)
-                    while "стоп" not in arg.split(" ") or j < lim:
-                        true_arg = args_check(args_struct[0], arg, None)
-                        array_for_arguments.append(true_arg)
-                        j += 1
-                        if j >= int(args_struct[1]):
-                            print("вы ввели достаточно аргументов скажите 'стоп' для остановки")
-                        arg = array_russian_text(lim, j, russian_array)
-                    dict_of_new_phrases.update({i: array_for_arguments})
-                except:
+                if arg_type == 1:
                     print("Введите аргумент " + rusian[i])
-                    true_arg = args_check(args_struct[0], None, args_struct[1])
+                    if args_struct[0] == PATH:
+                        true_arg = args_check(args_struct[0], None, None)
+                    else:
+                        arg = recognize_exception(True)
+                        true_arg = args_check(args_struct[0], arg, None)
                     dict_of_new_phrases.update({i: true_arg})
+                else:
+                    try:
+                        russian_array = rusian[i].split(" ")
+                        lim = int(args_struct[1])
+                        array_for_arguments = []
+                        j = 0
+                        arg = array_russian_text(lim, j, russian_array)
+                        while "стоп" not in arg.split(" ") or j < lim:
+                            true_arg = args_check(args_struct[0], arg, None)
+                            array_for_arguments.append(true_arg)
+                            j += 1
+                            if j >= int(args_struct[1]):
+                                print("вы ввели достаточно аргументов скажите 'стоп' для остановки")
+                            arg = array_russian_text(lim, j, russian_array)
+                        dict_of_new_phrases.update({i: array_for_arguments})
+                    except:
+                        print("Введите аргумент " + rusian[i])
+                        true_arg = args_check(args_struct[0], None, args_struct[1])
+                        dict_of_new_phrases.update({i: true_arg})
 
     print("Аргументы успешно введены")
     args_flag = True
