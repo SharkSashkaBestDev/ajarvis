@@ -45,7 +45,8 @@ public class Executor {
 
     public Executor() {
         try {
-            properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("servers.properties"));
+            properties.load(Thread.currentThread().getContextClassLoader()
+                    .getResourceAsStream("servers.properties"));
         } catch (IOException e) {
             LOG.error(e.getMessage());
         }
