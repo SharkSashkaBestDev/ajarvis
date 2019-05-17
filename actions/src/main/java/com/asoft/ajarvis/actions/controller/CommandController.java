@@ -82,13 +82,19 @@ public class CommandController {
             @PathVariable("id") String id,
             @RequestBody(required = false) Map<String, Object> args) {
         return repository.findById(id)
-                .map(existingCommand -> executor.createCode(new StringBuilder(), existingCommand).toString())
+                .map(existingCommand -> {
+                    try {
+                        return executor.createCode(new StringBuilder(), existingCommand).toString();
+                    } catch (Exception e) {
+                        return e.getMessage();
+                    }
+                })
                 .orElse(EMPTY);
     }
 
     @PostMapping(value = "/filter")
     public Object filter(@RequestBody Map<String, Object> args) {
-        args=filterService.filter(args.get(PHRASE).toString());
+        args = filterService.filter(args.get(PHRASE).toString());
         String phrase = args.get(PHRASE).toString();
 
         return phrase.isEmpty() ? null : args;

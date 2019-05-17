@@ -5,11 +5,16 @@
 - [MongoDb](https://www.mongodb.com/)
 
 Для конфигурации нужно заполнить в  файле [application.properties](https://github.com/SharkSashkaBestDev/ajarvis/blob/feature/Aj-33/actions/src/main/resources/application.properties) такие поля : <br>
-- `server.port`порт приложения  по умолчанию стоит 8091
+- `server.port`порт основного сервера (java) по умолчанию стоит 8091
 - `spring.data.mongodb.host`  адресс приложения по умолчанию стоит 127.0.0.1
 - `spring.data.mongodb.database` название базы для приложения
 
+Для конфигурации доступных языков и серверов нужно заполнить   файл [servers.properties](https://github.com/SharkSashkaBestDev/ajarvis/blob/feature/Aj-33/actions/src/main/resources/servers.properties) таким образом : <br>
+`PYTHON=http://127.0.0.1:5000/execute` ,где `PYTHON` переменная из [Language.java](https://github.com/SharkSashkaBestDev/ajarvis/blob/feature/Aj-33/actions/src/main/java/com/asoft/ajarvis/actions/enities/Language.java) <br>
+а `http://127.0.0.1:5000/execute` адрес сервера куда нужно отправлять запросы
+
 Для заполнения базы данных командами нужно выполнить запросы из файла [commands.http](https://github.com/SharkSashkaBestDev/ajarvis/blob/feature/Aj-33/actions/src/main/java/com/asoft/ajarvis/actions/enities/commands.http)  <br>
+пердварительно изменив поля `"phrase"` написав после равно то что нужно будет сказать для выполнения этой команды <br>
 
 
 Запуск сервера осуществляется из класа [AjarvisApplication](https://github.com/SharkSashkaBestDev/ajarvis/blob/feature/Aj-33/actions/src/main/java/com/asoft/ajarvis/actions/AjarvisApplication.java)
