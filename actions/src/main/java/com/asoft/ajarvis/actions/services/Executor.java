@@ -11,10 +11,14 @@ import groovy.lang.GroovyShell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.asoft.ajarvis.actions.constant.GeneralConstants.*;
 
@@ -25,6 +29,7 @@ import static com.asoft.ajarvis.actions.constant.GeneralConstants.*;
  * @see Command
  */
 @Service
+@PropertySource("classpath:servers.properties")
 public class Executor {
     private static final Logger LOG = LoggerFactory.getLogger(Executor.class);
 
@@ -32,7 +37,6 @@ public class Executor {
     private static final String RETURN = "return";
     private static final String MAP = "Map";
     private static final String CONTEXT = "context";
-    //private static final String LOG = "log";
 
 
     @Autowired
@@ -40,18 +44,9 @@ public class Executor {
     @Autowired
     private HistoryRepository historyRepo;
 
-    private Properties properties = new Properties();
+    @Autowired
+    private Environment servers;
 
-
-    public Executor() {
-        try {
-            properties.load(Thread.currentThread().getContextClassLoader()
-                    .getResourceAsStream("servers.properties"));
-        } catch (IOException e) {
-            LOG.error(e.getMessage());
-        }
-
-    }
 
     public StringBuilder createCode(StringBuilder code, Command cmd) throws Exception {
         StringBuilder invocation = null;
@@ -80,10 +75,10 @@ public class Executor {
                         .concat(OPEN_CURLY_BRACE).concat(NEWLINE)
         );
 
-        //TODO: reorganize to more readable code
+
         if (cmd.getCode() != null) {
             if (cmd.getLanguage() != null && cmd.getLanguage() != Language.JAVA) {
-                String serverAddr = properties.getProperty(cmd.getLanguage().toString());
+                String serverAddr = servers.getProperty(cmd.getLanguage().toString());
                 if (serverAddr == null) {
                     String message = String.format(
                             "Generating  code  for command %s faild :%s servers adress not found", cmd.getId(), cmd.getLanguage());
@@ -95,7 +90,7 @@ public class Executor {
                         String.format("ArrayList<String> ids = new ArrayList<>();" +
                                         "ids.add(\"\\\"%s\\\"\");" +
                                         "HashMap<String,Object>   result = context.getBean('request').sendRequest(\"%s\",ids, arg);" +
-                                        "if( result.get('error')!=null){throws new Exception(result.get('errors'))};" +
+                                        "if( result.get('error')!=null){throw new Exception(result.get('errors'))};" +
                                         "return result ",
                                 cmd.getId(), serverAddr)
                 );
