@@ -1,23 +1,30 @@
 # AJarvis Project
+Для запуска проекта необходимо:
+
+1. Запустить AjarvisApplication.java
+2. В cmd прописать: cd actions/src/main/python_server export FLASK_APP=server.py export FLASK_ENV=development flask run
+3. В новой cmd прописать: python3 recognition/src/main/python/main.py
+4. Команда для теста: "Открой браузер"
+
 ## Java part
 
 Для работы  требуется установка :
 - [MongoDb](https://www.mongodb.com/)
 
-Для конфигурации нужно заполнить в  файле [application.properties](https://github.com/SharkSashkaBestDev/ajarvis/blob/feature/Aj-33/actions/src/main/resources/application.properties) такие поля : <br>
+Для конфигурации нужно заполнить в  файле [application.properties](./actions/src/main/java/com/asoft/ajarvis/actions/AjarvisApplication.java) такие поля : <br>
 - `server.port`порт основного сервера (java) по умолчанию стоит 8091
 - `spring.data.mongodb.host`  адресс приложения по умолчанию стоит 127.0.0.1
 - `spring.data.mongodb.database` название базы для приложения
 
-Для конфигурации доступных языков и серверов нужно заполнить   файл [servers.properties](https://github.com/SharkSashkaBestDev/ajarvis/blob/feature/Aj-33/actions/src/main/resources/servers.properties) таким образом : <br>
-`PYTHON=http://127.0.0.1:5000/execute` ,где `PYTHON` переменная из [Language.java](https://github.com/SharkSashkaBestDev/ajarvis/blob/feature/Aj-33/actions/src/main/java/com/asoft/ajarvis/actions/enities/Language.java) <br>
+Для конфигурации доступных языков и серверов нужно заполнить   файл [servers.properties](./actions/src/main/resources/servers.properties) таким образом : <br>
+`PYTHON=http://127.0.0.1:5000/execute` ,где `PYTHON` переменная из [Language.java](./actions/src/main/java/com/asoft/ajarvis/actions/enities/Language.java) <br>
 а `http://127.0.0.1:5000/execute` адрес сервера куда нужно отправлять запросы
 
-Для заполнения базы данных командами нужно выполнить запросы из файла [commands.http](https://github.com/SharkSashkaBestDev/ajarvis/blob/feature/Aj-33/actions/src/main/java/com/asoft/ajarvis/actions/enities/commands.http)  <br>
+Для заполнения базы данных командами нужно выполнить запросы из файла [commands.http](./actions/src/main/java/com/asoft/ajarvis/actions/enities/commands.http)  <br>
 пердварительно изменив поля `"phrase"` написав после равно то что нужно будет сказать для выполнения этой команды <br>
 
 
-Запуск сервера осуществляется из класа [AjarvisApplication](https://github.com/SharkSashkaBestDev/ajarvis/blob/feature/Aj-33/actions/src/main/java/com/asoft/ajarvis/actions/AjarvisApplication.java)
+Запуск сервера осуществляется из класа [AjarvisApplication](./actions/src/main/java/com/asoft/ajarvis/actions/AjarvisApplication.java)
 
 Выполнение команд происходит через запросы на адреса 
  * для фильтрации строки и выделение фразы конкретной команды для выполнения нужно отправить 
