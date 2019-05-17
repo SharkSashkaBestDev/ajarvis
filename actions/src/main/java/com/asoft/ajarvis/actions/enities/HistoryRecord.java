@@ -16,7 +16,7 @@ public class HistoryRecord {
     private Date time;
     private Map<String, Object> arg;
     private Map<String, Object> result;
-    private List<String> commandIds;
+
 
 
     public HistoryRecord() {
@@ -36,8 +36,5 @@ public class HistoryRecord {
         this.result = result;
     }
 
-    public HistoryRecord(List<String> commandIds) {
-        this();
-        this.commandIds = commandIds;
-    }
+
 }
