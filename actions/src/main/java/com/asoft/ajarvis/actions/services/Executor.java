@@ -75,9 +75,8 @@ public class Executor {
                         .concat(OPEN_CURLY_BRACE).concat(NEWLINE)
         );
 
-
         if (cmd.getCode() != null) {
-            if (cmd.getLanguage() != null && cmd.getLanguage() != Language.JAVA) {
+            if (cmd.getLanguage() != null && !cmd.getLanguage().equals(Language.JAVA)) {
                 String serverAddr = servers.getProperty(cmd.getLanguage().toString());
                 if (serverAddr == null) {
                     String message = String.format(
@@ -89,13 +88,11 @@ public class Executor {
                 code.append(
                         String.format("ArrayList<String> ids = new ArrayList<>();" +
                                         "ids.add(\"\\\"%s\\\"\");" +
-                                        "HashMap<String,Object>   result = context.getBean('request').sendRequest(\"%s\",ids, arg);" +
+                                        "HashMap<String,Object> result = context.getBean('request').sendRequest(\"%s\",ids, arg);" +
                                         "if( result.get('error')!=null){throw new Exception(result.get('errors'))};" +
                                         "return result ",
                                 cmd.getId(), serverAddr)
                 );
-
-
             } else {
                 code.append(cmd.getCode().concat(SPACE));
             }

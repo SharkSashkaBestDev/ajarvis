@@ -19,8 +19,6 @@ public class HistoryController {
 
 @GetMapping
     public Iterable<HistoryRecord> getHistory() {
-
-
         logger.info("Returning total history");
         return historyRepo.findAllByOrderByTimeDesc();
     }

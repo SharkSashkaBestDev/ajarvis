@@ -1,7 +1,6 @@
 package com.asoft.ajarvis.actions.controller;
 
 import com.asoft.ajarvis.actions.enities.Command;
-import com.asoft.ajarvis.actions.enities.HistoryRecord;
 import com.asoft.ajarvis.actions.repository.CommandRepository;
 import com.asoft.ajarvis.actions.repository.HistoryRepository;
 import com.asoft.ajarvis.actions.services.Executor;
@@ -13,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.Map;
 
 import static com.asoft.ajarvis.actions.constant.GeneralConstants.EMPTY;
@@ -39,7 +37,6 @@ public class CommandController {
         logger.info("Returning list of all commands");
         return repository.findAll();
     }
-
 
 
     @PostMapping
@@ -77,7 +74,8 @@ public class CommandController {
                     try {
                         return executor.createCode(new StringBuilder(), existingCommand).toString();
                     } catch (Exception e) {
-                        return e.getMessage();
+                        logger.error(String.format("Cant return generated code: %s", e.getMessage()),e);
+                        return null;
                     }
                 })
                 .orElse(EMPTY);

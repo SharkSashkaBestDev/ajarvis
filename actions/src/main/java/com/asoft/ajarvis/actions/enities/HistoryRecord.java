@@ -17,8 +17,6 @@ public class HistoryRecord {
     private Map<String, Object> arg;
     private Map<String, Object> result;
 
-
-
     public HistoryRecord() {
         this.id = UUID.randomUUID().toString();
         this.time = new Date();

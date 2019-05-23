@@ -2,8 +2,8 @@
 Для запуска проекта необходимо:
 
 1. Запустить AjarvisApplication.java
-2. В cmd прописать: cd actions/src/main/python_server export FLASK_APP=server.py export FLASK_ENV=development flask run
-3. В новой cmd прописать: python3 recognition/src/main/python/main.py
+2. В cmd прописать: `cd actions/src/main/python_server` && `export FLASK_APP=server.py` && `export FLASK_ENV=development` && `flask run`
+3. В новой cmd прописать: `python3 recognition/src/main/python/main.py`
 4. Команда для теста: "Открой браузер"
 
 ## Java part
@@ -28,7 +28,7 @@
 
 Выполнение команд происходит через запросы на адреса 
  * для фильтрации строки и выделение фразы конкретной команды для выполнения нужно отправить 
-    `POST` запрос на адресс `localhost:8091/ajarvis/commands/filter` с телом запроза подобным на  <br> 
+    `POST` запрос на адрес `localhost:8091/ajarvis/commands/filter` с телом запроса подобным на  <br> 
  `{
    	"phrase":"sds as тип тест  go вы  Work аргументы путь 10  11.5 "
    }`
@@ -38,10 +38,10 @@
         - "phrase"
     
 * для получения всех команд  нужно отправить 
-    `GET` запрос на адресс `localhost:8091/ajarvis/commands` 
+    `GET` запрос на адрес `localhost:8091/ajarvis/commands` 
     
 * для  выполнения команды  нужно отправить 
-    `POST` запрос на адресс `localhost:8091/ajarvis/commands/execute` с телом запроза подобным на (обьяснения после тела ) <br> 
+    `POST` запрос на адрес `localhost:8091/ajarvis/commands/execute` с телом запроса подобным на (обьяснения после тела ) <br> 
  `{
       "begin": 0,
       "phrase": "exec histry",
@@ -57,10 +57,9 @@
         - ...
        
 * также есть запросы для разработчиков :<br>
-    - что бы понять как будет выглядеть код определенной команды 
-        нужно отправить `GET` запрос на адресс `localhost:8091/ajarvis/commands/giveCode/{id}` 
+    - чтобы понять как будет выглядеть код определенной команды 
+        нужно отправить `GET` запрос на адрес `localhost:8091/ajarvis/commands/giveCode/{id}` 
         на месте `{id}` нужно вставить идентификатор конкретной команды
-        
 
 ## Python part
 
