@@ -147,6 +147,23 @@ POST http://localhost:8091/ajarvis/commands
 Content-Type: application/json
 
 {
+  "id": "c037fffd-6c61-4c57-8021-1a4d65d87058",
+  "name": "getHistoryIdsList",
+  "phrase": "get historyIdsList",
+  "code": "OptionalInt begin = arg.get('begin')!=null?OptionalInt.of(arg.get('begin')):OptionalInt.empty();OptionalInt end = arg.get('end')!=null?OptionalInt.of(arg.get('end')):OptionalInt.empty();ArrayList<String> ids=context.getBean('historyService').getIdsList(begin,end);arg.put('ids',ids);return arg;",
+  "paramType": {
+    "begin": "int",
+    "end": "int "
+  },
+  "returnType": {
+    "begin": "int",
+    "end": "int ",
+    "ids": "HistoryId["
+  },
+  "language": "JAVA",
+  "whereUsed": [
+    "62d5faf4-5bc6-4a11-807e-6c40c4c198b9"
+  ]
 }
 
 ###
@@ -157,6 +174,57 @@ POST http://localhost:8091/ajarvis/commands
 Content-Type: application/json
 
 {
+  "id": "fa4f7fb2-b29b-4324-b425-b6d4c5ac6eef",
+  "name": "executeHistory",
+  "phrase": "exec histry",
+  "code": "ArrayList<String> ids = arg.get('ids')!=null?arg.get('ids'):null;if (ids == null || ids.isEmpty()) {log.error('ids is not existing or empty'); arg.put('error','ids is not existing or empty'); return arg ;}; context.getBean('historyService').executeHistory(ids);return arg;",
+  "paramType": {
+    "ids": "HistoryId["
+  },
+  "returnType": {
+    "ids": "HistoryId["
+  },
+  "language": "JAVA",
+  "whereUsed": [
+    "62d5faf4-5bc6-4a11-807e-6c40c4c198b9"
+  ]
 }
 
 #####
+POST http://localhost:8091/ajarvis/commands
+Content-Type: application/json
+
+{
+  "id": "62d5faf4-5bc6-4a11-807e-6c40c4c198b9",
+  "name": "executehistory",
+  "phrase": "executehistory",
+  "paramType": {
+    "begin": "int",
+    "end": "int "
+  },
+  "returnType": {
+    "ids": "HistoryId["
+  },
+  "usedCommandsIds": [
+    "c037fffd-6c61-4c57-8021-1a4d65d87058",
+    "fa4f7fb2-b29b-4324-b425-b6d4c5ac6eef"
+  ]
+}
+
+######
+#####
+POST http://localhost:8091/ajarvis/commands
+Content-Type: application/json
+
+{
+  "name": "clearHistory",
+  "phrase": "clear history",
+  "code": "context.getBean('historyService').clearHistory();return arg;",
+  "paramType": {
+  },
+  "returnType": {
+  }
+
+}
+
+######

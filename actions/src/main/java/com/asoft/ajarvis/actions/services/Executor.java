@@ -1,6 +1,7 @@
 package com.asoft.ajarvis.actions.services;
 
 import com.asoft.ajarvis.actions.AjarvisApplication;
+import com.asoft.ajarvis.actions.constant.GeneralConstants;
 import com.asoft.ajarvis.actions.enities.Command;
 import com.asoft.ajarvis.actions.enities.HistoryRecord;
 import com.asoft.ajarvis.actions.enities.Language;
@@ -10,6 +11,8 @@ import groovy.lang.GroovyShell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -26,28 +29,26 @@ import static com.asoft.ajarvis.actions.constant.GeneralConstants.*;
  * @see Command
  */
 @Service
+@PropertySource("classpath:servers.properties")
 public class Executor {
-    private static final Logger logger = LoggerFactory.getLogger(Executor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Executor.class);
 
     private static final String ARG = "arg";
     private static final String RETURN = "return";
     private static final String MAP = "Map";
     private static final String CONTEXT = "context";
-    private static final String LOG = "log";
-    private static final String ERROR = "Error";
+
 
     @Autowired
     private CommandRepository cmdRepo;
     @Autowired
     private HistoryRepository historyRepo;
 
-    private static HashMap<Language, String> servers = new HashMap<>();
+    @Autowired
+    private Environment servers;
 
-    static {
-        servers.put(Language.PYTHON, "http://localhost:5000/execute");
-    }
 
-    public StringBuilder createCode(StringBuilder code, Command cmd) {
+    public StringBuilder createCode(StringBuilder code, Command cmd) throws Exception {
         StringBuilder invocation = null;
 
         if (cmd.getUsedCommandsIds() != null && !cmd.getUsedCommandsIds().isEmpty()) {
@@ -74,24 +75,24 @@ public class Executor {
                         .concat(OPEN_CURLY_BRACE).concat(NEWLINE)
         );
 
-        //TODO: reorganize to more readable code
         if (cmd.getCode() != null) {
-            if (cmd.getLanguage() != null) {
-                switch (cmd.getLanguage()) {
-                    case PYTHON:
-                        code.append(
-                                String.format("ArrayList<String> ids = new ArrayList<>();" +
-                                                "ids.add(\"\\\"%s\\\"\");" +
-                                                "return context.getBean('request').sendRequest(\"%s\",ids, arg);",
-                                        cmd.getId(), servers.get(Language.PYTHON))
-                        );
-                        break;
-                    case JAVA:
-                        code.append(cmd.getCode().concat(SPACE));
-                        break;
-                    default:
-                        break;
+            if (cmd.getLanguage() != null && !cmd.getLanguage().equals(Language.JAVA)) {
+                String serverAddr = servers.getProperty(cmd.getLanguage().toString());
+                if (serverAddr == null) {
+                    String message = String.format(
+                            "Generating  code  for command %s faild :%s servers adress not found", cmd.getId(), cmd.getLanguage());
+                    LOG.error(message);
+                    throw new Exception(message);
                 }
+
+                code.append(
+                        String.format("ArrayList<String> ids = new ArrayList<>();" +
+                                        "ids.add(\"\\\"%s\\\"\");" +
+                                        "HashMap<String,Object> result = context.getBean('request').sendRequest(\"%s\",ids, arg);" +
+                                        "if( result.get('error')!=null){throw new Exception(result.get('errors'))};" +
+                                        "return result ",
+                                cmd.getId(), serverAddr)
+                );
             } else {
                 code.append(cmd.getCode().concat(SPACE));
             }
@@ -109,7 +110,7 @@ public class Executor {
         GroovyShell shell = new GroovyShell();
         shell.setVariable(ARG, args);
         shell.setVariable(CONTEXT, AjarvisApplication.getContext());
-        shell.setVariable(LOG, LoggerFactory.getLogger(cmd.getId()));
+        shell.setVariable(GeneralConstants.LOG, LoggerFactory.getLogger(cmd.getId()));
 
         StringBuilder code = createCode(new StringBuilder(), cmd);
 
@@ -119,17 +120,20 @@ public class Executor {
     }
 
     public Object execute(final Command cmd, Map<String, Object> args) {
-        Map result=new  HashMap<String,Object>();
+        Map result = new HashMap<String, Object>();
         try {
-            result.putAll((Map)excuteCmd(cmd, args));
+            Map returned = (Map) excuteCmd(cmd, args);
+            if (returned != null) {
+                result.putAll(returned);
+            }
             return result;
         } catch (Exception e) {
-            logger.error(String.format("Execution failure in %s command with error message: %s", cmd.getId(), e.getMessage()));
-            result.put(ERROR,e.getMessage());
+            LOG.error(String.format("Execution failure in %s command with error message: %s", cmd.getId(), e.getMessage()));
+            result.put(ERROR, e.getMessage());
             return e;
         } finally {
-            historyRepo.save(new HistoryRecord(cmd.getId(), args,result));
-            logger.info("History was updated: new record was added");
+            historyRepo.save(new HistoryRecord(cmd.getId(), args, result));
+            LOG.info("History was updated: new record was added");
         }
     }
 }

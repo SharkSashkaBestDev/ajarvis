@@ -1,7 +1,6 @@
 package com.asoft.ajarvis.actions.controller;
 
 import com.asoft.ajarvis.actions.enities.Command;
-import com.asoft.ajarvis.actions.enities.HistoryRecord;
 import com.asoft.ajarvis.actions.repository.CommandRepository;
 import com.asoft.ajarvis.actions.repository.HistoryRepository;
 import com.asoft.ajarvis.actions.services.Executor;
@@ -13,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.Map;
 
 import static com.asoft.ajarvis.actions.constant.GeneralConstants.EMPTY;
@@ -40,16 +38,6 @@ public class CommandController {
         return repository.findAll();
     }
 
-    @GetMapping("/history")
-    public Iterable<HistoryRecord> getHistory(@RequestParam Date dt) {
-        if (dt != null) {
-            logger.info("Returning history by date");
-            return historyRepo.findAllByTimeGreaterThan(dt);
-        }
-
-        logger.info("Returning total history");
-        return historyRepo.findAll();
-    }
 
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
@@ -82,13 +70,20 @@ public class CommandController {
             @PathVariable("id") String id,
             @RequestBody(required = false) Map<String, Object> args) {
         return repository.findById(id)
-                .map(existingCommand -> executor.createCode(new StringBuilder(), existingCommand).toString())
+                .map(existingCommand -> {
+                    try {
+                        return executor.createCode(new StringBuilder(), existingCommand).toString();
+                    } catch (Exception e) {
+                        logger.error(String.format("Cant return generated code: %s", e.getMessage()),e);
+                        return null;
+                    }
+                })
                 .orElse(EMPTY);
     }
 
     @PostMapping(value = "/filter")
     public Object filter(@RequestBody Map<String, Object> args) {
-        args=filterService.filter(args.get(PHRASE).toString());
+        args = filterService.filter(args.get(PHRASE).toString());
         String phrase = args.get(PHRASE).toString();
 
         return phrase.isEmpty() ? null : args;

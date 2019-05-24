@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -32,4 +33,6 @@ public class HistoryRecord {
         this.arg = arg;
         this.result = result;
     }
+
+
 }

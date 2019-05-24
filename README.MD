@@ -1,49 +1,66 @@
+# AJarvis Project
 Для запуска проекта необходимо:
+
 1. Запустить AjarvisApplication.java
-2. В cmd прописать: cd actions/src/main/python_server
-export FLASK_APP=server.py
-export FLASK_ENV=development 
-flask run 
-3. В новой cmd прописать: python3 recognition/src/main/python/main.py
+2. В cmd прописать: `cd actions/src/main/python_server` && `export FLASK_APP=server.py` && `export FLASK_ENV=development` && `flask run`
+3. В новой cmd прописать: `python3 recognition/src/main/python/main.py`
 4. Команда для теста: "Открой браузер"
 
-# AJarvis Project
 ## Java part
-Для работы требуется установка :
 
-MongoDb
-Для конфигурации нужно заполнить в файле application.properties такие поля : 
+Для работы  требуется установка :
+- [MongoDb](https://www.mongodb.com/)
 
-server.portпорт приложения по умолчанию стоит 8091
-spring.data.mongodb.host адресс приложения по умолчанию стоит 127.0.0.1
-spring.data.mongodb.database название базы для приложения
-Для заполнения базы данных командами нужно выполнить запросы из файла commands.http 
+Для конфигурации нужно заполнить в  файле [application.properties](./actions/src/main/java/com/asoft/ajarvis/actions/AjarvisApplication.java) такие поля : <br>
+- `server.port`порт основного сервера (java) по умолчанию стоит 8091
+- `spring.data.mongodb.host`  адресс приложения по умолчанию стоит 127.0.0.1
+- `spring.data.mongodb.database` название базы для приложения
 
-Запуск сервера осуществляется из класа AjarvisApplication
+Для конфигурации доступных языков и серверов нужно заполнить   файл [servers.properties](./actions/src/main/resources/servers.properties) таким образом : <br>
+`PYTHON=http://127.0.0.1:5000/execute` ,где `PYTHON` переменная из [Language.java](./actions/src/main/java/com/asoft/ajarvis/actions/enities/Language.java) <br>
+а `http://127.0.0.1:5000/execute` адрес сервера куда нужно отправлять запросы
 
-Выполнение команд происходит через запросы на адреса
+Для заполнения базы данных командами нужно выполнить запросы из файла [commands.http](./actions/src/main/java/com/asoft/ajarvis/actions/enities/commands.http)  <br>
+пердварительно изменив поля `"phrase"` написав после равно то что нужно будет сказать для выполнения этой команды <br>
 
-для фильтрации строки и выделение фразы конкретной команды для выполнения нужно отправить POST запрос на адресс localhost:8091/ajarvis/commands/filter с телом запроза подобным на 
-{ "phrase":"sds as тип тест go вы Work аргументы путь 10 11.5 " }
 
-фраза для фильтрации :
-"phrase"
-для получения всех команд нужно отправить GET запрос на адресс localhost:8091/ajarvis/commands
+Запуск сервера осуществляется из класа [AjarvisApplication](./actions/src/main/java/com/asoft/ajarvis/actions/AjarvisApplication.java)
 
-для выполнения команды нужно отправить POST запрос на адресс localhost:8091/ajarvis/commands/execute с телом запроза подобным на (обьяснения после тела ) 
-{ "begin": 0, "phrase": "exec histry", "end": 0 }
+Выполнение команд происходит через запросы на адреса 
+ * для фильтрации строки и выделение фразы конкретной команды для выполнения нужно отправить 
+    `POST` запрос на адрес `localhost:8091/ajarvis/commands/filter` с телом запроса подобным на  <br> 
+ `{
+   	"phrase":"sds as тип тест  go вы  Work аргументы путь 10  11.5 "
+   }`
+  
+    
+    - фраза для фильтрации :
+        - "phrase"
+    
+* для получения всех команд  нужно отправить 
+    `GET` запрос на адрес `localhost:8091/ajarvis/commands` 
+    
+* для  выполнения команды  нужно отправить 
+    `POST` запрос на адрес `localhost:8091/ajarvis/commands/execute` с телом запроса подобным на (обьяснения после тела ) <br> 
+ `{
+      "begin": 0,
+      "phrase": "exec histry",
+      "end": 0
+  }`
+  
+    
+    - фраза команды:
+        - "phrase"
+    - аргументы:
+        - "begin"
+        - "end"
+        - ...
+       
+* также есть запросы для разработчиков :<br>
+    - чтобы понять как будет выглядеть код определенной команды 
+        нужно отправить `GET` запрос на адрес `localhost:8091/ajarvis/commands/giveCode/{id}` 
+        на месте `{id}` нужно вставить идентификатор конкретной команды
 
-фраза команды:
-"phrase"
-аргументы:
-"begin"
-"end"
-...
-также есть запросы для разработчиков :
-
-что бы понять как будет выглядеть код определенной команды нужно отправить GET запрос на адресс localhost:8091/ajarvis/commands/giveCode/{id} на месте {id} нужно вставить идентификатор конкретной команды
-
-# AJarvis Project
 ## Python part
 
 Использовался **Python** версии >= **3.7.3**
@@ -86,3 +103,4 @@ spring.data.mongodb.database название базы для приложени
 Если возникнут **исключения**, то в возвращаемом объекте будет содержаться ключ **`error`**, значение - строка с ошибкой
 2. `GET /clean`<br>
 Очистит внутренний словарь сервера с некоторыми запомненными аргументами и результатами выполнения.
+
