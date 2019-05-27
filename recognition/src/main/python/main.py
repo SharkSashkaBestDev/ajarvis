@@ -5,7 +5,9 @@ from queue import Queue
 import requests
 
 import os
+import platform
 import webbrowser
+
 
 LANG_RU = "ru-RU"
 PHRASE = "phrase"
@@ -16,6 +18,7 @@ COMAND = "comand"
 RUSSIAN = "russian"
 STRING = "String"
 BASE_URL = "http://127.0.0.1:8091/ajarvis/commands/"
+simbol = "/"
 
 
 def args_check(args_type, raw_arg, enum_filtr):
@@ -65,7 +68,7 @@ def args_check(args_type, raw_arg, enum_filtr):
         path = []
         error_args = False
         while "стоп" not in arg.split(" "):
-            stre = '\\' + '\\'.join(path)
+            stre = simbol + simbol.join(path)
             if os.path.isfile(stre):
                 break
             list = os.listdir(stre)
@@ -77,8 +80,8 @@ def args_check(args_type, raw_arg, enum_filtr):
                         if not os.path.isfile(stre + list[i]):
                             os.listdir(stre + list[i])
                     else:
-                        if not os.path.isfile(stre + "\\" + list[i]):
-                            os.listdir(stre + "\\" + list[i])
+                        if not os.path.isfile(stre + simbol + list[i]):
+                            os.listdir(stre + simbol + list[i])
                 except:
                     del list[i]
             html = '<!DOCTYPE html><html> <head><meta charset = "UTF-8"><title> путь </title></head><body><h1>Скажите номер папки или файла</h1><table>'
@@ -182,7 +185,7 @@ def listen():
     global args_flag
     with sr.Microphone() as source:
         r.adjust_for_ambient_noise(source, duration=1)
-        print("Я слушаю!")
+        print("я слушаю!")
         while True:
             aud = r.listen(source, phrase_time_limit=5)
             if args_flag:
