@@ -5,7 +5,6 @@ from queue import Queue
 import requests
 
 import os
-import platform
 import webbrowser
 
 
@@ -63,7 +62,6 @@ def args_check(args_type, raw_arg, enum_filtr):
             else:
                 print("Вы ввели слово не из списка")
     elif args_type == PATH:
-        # webbrowser.open("http://127.0.0.1:5000/")
         arg = ""
         path = []
         error_args = False
@@ -97,16 +95,9 @@ def args_check(args_type, raw_arg, enum_filtr):
                 f.close()
 
             webbrowser.open("path.html")
-            # webbrowser.refresh()
-            # redirect(url_for('apiget', list=list, err = False))
             arg = recognize_exception(True)
-            try:
-                numb = int(arg) - 1
-                path.append(list[numb])
-            except:
-                if arg != "стоп":
-                    pass
-                    # redirect(url_for('apiget', list=list, err=True))
+            numb = int(arg) - 1
+            path.append(list[numb])
         return stre
 
 
